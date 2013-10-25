@@ -62,6 +62,7 @@
 				if (isset($_POST[$i_idx]) && $_POST[$i_idx] != 0 && $in_up == 0)
 				{
 					mysql_query("insert into indent_order (i_indent_no,i_item_code, qty) values ('$_POST[indent_no_gen]','$i_idx', '$_POST[$i_idx]' )");
+					
 					mysql_query("update inventory set primary_stock=primary_stock-'$_POST[$i_idx]' where s_item_code=$i_idx");
 				}
 		
@@ -74,8 +75,14 @@
 		
 		if(isset($_POST['indentkey']))
 		{
+			$del_qty_query=mysql_query("select qty,i_item_code from indent_order where i_indent_no='$_POST[indentkey]'" );
+			while($del_qty_arr=mysql_fetch_array($del_qty_query)){
+				mysql_query("update inventory set primary_stock=primary_stock +'$del_qty_arr[qty]' where s_item_code='$del_qty_arr[i_item_code]'");
+				
+			}
 			mysql_query("delete from indent_order where i_indent_no='$_POST[indentkey]'") ;
 			mysql_query("delete from indent where indent_no='$_POST[indentkey]'") ;
+			
 				
 			
 		}
