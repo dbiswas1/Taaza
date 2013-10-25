@@ -121,7 +121,7 @@ else
                   <div class="form-row control-group row-fluid">
                   <label class="control-label span3" for="normal-field" >Dues</label>
                   	<div class="controls span4">
-                    <input type="text" id="normal-field" class="row-fluid" name="dues" placeholder="0" onfocus="this.value='';"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
+                    <input type="text" id="normal-field" class="row-fluid" name="dues" placeholder="0" onfocus="this.value='';"  onblur="extractNumber(this,2,true);" onkeyup="extractNumber(this,2,true);" onkeypress="return blockNonNumbers(this, event, true, true);">
                  	</div>
                  </div>
                  

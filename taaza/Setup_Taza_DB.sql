@@ -72,8 +72,6 @@ foreign key(in_h_indent_no) references indent(indent_no) on delete cascade);
 create table payment_master (pay_id int unsigned not null auto_increment, pay_c_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
 pay_v_no int unsigned default 0 , primary key(pay_id), foreign key(pay_c_id) references client(c_id) on delete cascade);
 
-create table bill_payment_master (bl_id int unsigned not null auto_increment, bill_b_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
-pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) references biller(b_id) on delete cascade);
 
 -- Create Purchase tables
 
@@ -90,5 +88,7 @@ pu_item_code int not null, p_b_id int  not null, p_date datetime not null, prima
 create table wastage_history (w_id int unsigned not null auto_increment,w_item_code int not null, qty double (9,2), date datetime default now(), primary key(w_id),  
 foreign key(w_item_code) references item_master(item_code) on delete cascade );
 
- 
+-- Biller Payment Table 
 
+create table bill_payment_master (bl_id int unsigned not null auto_increment, bill_b_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
+pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) references biller(b_id) on delete cascade);

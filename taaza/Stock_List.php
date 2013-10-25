@@ -185,7 +185,7 @@
                   ?>
                     <td><?php echo $stock_arr['s_id'] ;?></td>
                     <td><?php echo $stock_arr['item'] ;?></td>
-                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" value="<?php echo $stock_arr['primary_stock'] ;?>" placeholder="<?php echo $stock_arr['primary_stock'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" value="<?php echo $stock_arr['primary_stock'] ;?>" placeholder="<?php echo $stock_arr['primary_stock'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,true);" onkeyup="extractNumber(this,2,true);" onkeypress="return blockNonNumbers(this, event, true, true);"> </td>
                     
                     
                    <?php }
@@ -253,7 +253,7 @@
                   ?>
                     <td><?php echo $stock_arr['s_id'] ;?></td>
                     <td><?php echo $stock_arr['item'] ;?></td>
-                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" type="text" value="<?php echo $stock_arr['secondary_stock'] ;?>" placeholder="<?php echo $stock_arr['secondary_stock'] ;?>" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" type="text" value="<?php echo $stock_arr['secondary_stock'] ;?>" placeholder="<?php echo $stock_arr['secondary_stock'] ;?>" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,true);" onkeyup="extractNumber(this,2,true);" onkeypress="return blockNonNumbers(this, event, true, true);"> </td>
                     
                    <?php }
                    $limit=$limit+3; ?>
@@ -319,7 +319,7 @@
                   ?>
                     <td><?php echo $stock_arr['s_id'] ;?></td>
                     <td><?php echo $stock_arr['item'] ;?></td>
-                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" value="<?php echo $stock_arr['waste_stock'] ;?>" placeholder="<?php echo $stock_arr['waste_stock'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+                    <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $stock_arr['s_item_code'] ;?>" value="<?php echo $stock_arr['waste_stock'] ;?>" placeholder="<?php echo $stock_arr['waste_stock'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,true);" onkeyup="extractNumber(this,2,true);" onkeypress="return blockNonNumbers(this, event, true, true);"> </td>
                     
                     
                    <?php }
