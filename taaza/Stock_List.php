@@ -28,6 +28,7 @@
 				$value=$_POST[$i];
 				mysql_query("update inventory set primary_stock=$value where s_item_code=$i" );
 				
+				
 			}
 			
 		}
@@ -42,9 +43,10 @@
 				$i=$s_indx['s_item_code'];
 					
 				$value=$_POST[$i];
-				mysql_query("update inventory set waste_stock=$value where s_item_code=$i" );
+				mysql_query("update inventory set waste_stock=$value,primary_stock=primary_stock-$value where s_item_code=$i" );
 				if($value !=0 )
 					mysql_query("insert into wastage_history (w_item_code,qty) values ($i,$value)");
+					
 		
 			}
 				
