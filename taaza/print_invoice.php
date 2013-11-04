@@ -12,6 +12,7 @@ $mpdf=new mPDF();
 $mpdf->SetFooter('Taaza Tarkari Agro India PVT LTD ||Page {PAGENO} of {nb}');
 list($m,$d,$y)=split('-',$_GET['date']);
 $client_details=mysql_query("select dues,shop_name,client_name,ph_num from client where c_id='$_GET[cid]'");
+
 $client_arr=mysql_fetch_assoc($client_details);
 $invoice_report=mysql_query("select it.item,ino.qty,in_h_price from invoice_history ih, indent_order ino, item_master it where it.item_code=in_h_item_code and ih.in_h_item_code=ino.i_item_code and ih.in_h_indent_no=ino.i_indent_no and ih.in_h_invoice_no=$_GET[invoice_no]");
 $last_bill_query=mysql_query("select  date_format(in_date,'%b-%d-%Y') as in_date,amount from invoice where in_c_id='$_GET[cid]' and invoice_no <= '$_GET[invoice_no]' order by invoice_no desc  limit 2");
@@ -41,8 +42,16 @@ $dues=$client_arr['dues'];
 $dues2_query=mysql_query($due_string);
 $due2_arr=mysql_fetch_assoc($dues2_query);
 
+$clientpaymet_count=mysql_query("select count(*) as count from payment_master where pay_c_id='$_GET[cid]'");
+$clientpaymet_count_arr=mysql_fetch_assoc($clientpaymet_count);
+
+
+
+
 $dues2=$due2_arr['dues'];
 $dues2_date=$due2_arr['date'];
+
+
 
 /*if(strlen($dues2) == 0 )
 {
@@ -105,9 +114,15 @@ $invoice_txt = '
 				
 				
 				
-				$dues= $dues - $total;
+				//$dues= $dues - $total;
 				
-				$grand_total=$dues+$total;
+				if($clientpaymet_count_arr ['count'] == 1)
+				{
+					//echo "i am in";
+					$dues2=$dues-$total;
+				}
+				
+				$grand_total=$dues2+$total;
 				
 				$invoice_txt.='<tr class="c20">
 					<td class="c0 c38" align="center"><p class="c8 c6 c30"><h1 class="c8 c1 c43"><span class="c5">Total Items = '.$sl_no.'</span></h1></p></td>

@@ -115,11 +115,11 @@
                             <select name="cl_id"  class="chzn-select">
                               <option value="<?php echo $_GET['cid']; ?>" selected><?php echo $_GET['shop_name']; ?></option>
                              <?php 
-                             	$client_array=mysql_query("select c_id, shop_name from client where c_id != '$_GET[cid]'");
-                             	while ($cl_arr = mysql_fetch_array($client_array)) {?>
+                             	//$client_array=mysql_query("select c_id, shop_name from client where c_id != '$_GET[cid]'");
+                             	//while ($cl_arr = mysql_fetch_array($client_array)) {?>
                               
-                              <option value="<?php echo $cl_arr['c_id']; ?>"><?php echo $cl_arr['shop_name']; ?></option>
-                              <?php }  ?>
+                            <!--    <option value="<?php // echo $cl_arr['c_id']; ?>"><?php //echo $cl_arr['shop_name']; ?></option> -->
+                              <?php //}  ?>
                               
                             </select>
                           </div>
@@ -300,9 +300,10 @@ function validate()
 
 	y=document.forms["pay_form"]["pay"].value;
 	x=document.forms["pay_form"]["cl_id"].value
-	if (x == "" || y == "" || x == null || y == null ) {
+	z=document.forms["pay_form"]["vouch"].value
+	if (x == "" || y == "" || x == null || y == null || y == "0.00" || z == "" || z == "0.00" || z == null || z == 0 ) {
 	
-		alert ('Client Name and Amount are mandatory');
+		alert ('Client Name, Voucher Number and Amount are mandatory');
 		return false;
 	}
 	

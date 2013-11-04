@@ -111,14 +111,14 @@
                       
                       <option value="<?php echo $_GET['gen_c_id']; ?>" selected><?php echo $_GET['gen_c_name']; ?></option>
                       <?php 
-                      	$option_client_arr1=mysql_query("select c_id,shop_name from client where c_id != '$_GET[gen_c_id]'");
-                      	while($option_client_arr=mysql_fetch_array($option_client_arr1)){
+                      	//$option_client_arr1=mysql_query("select c_id,shop_name from client where c_id != '$_GET[gen_c_id]'");
+                      	//while($option_client_arr=mysql_fetch_array($option_client_arr1)){
                       		
                       	
                       ?>
-                      <option value="<?php echo $option_client_arr['c_id']; ?>"><?php echo $option_client_arr['shop_name'];?></option>
+                      <!--  <option value="<?php echo $option_client_arr['c_id']; ?>"><?php echo $option_client_arr['shop_name'];?></option> -->
                       
-                      <?php } ?>
+                      <?php // } ?>
                    
                </select>
                </div>

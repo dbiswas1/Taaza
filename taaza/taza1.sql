@@ -205,3 +205,24 @@ foreign key(w_item_code) references item_master(item_code) on delete cascade );
 
 
 select * from wastage_history;
+
+
+-- Expense Related
+
+create table employee (eid int unsigned not null auto_increment, e_name varchar(100), joining_date  datetime not null , primary key(eid) );
+
+create table expense_list(ex_id int unsigned not null auto_increment, ex_type varchar(100), primary key(ex_id));
+
+create table expense (ep_id int unsigned not null auto_increment, notes varchar(200),ep_eid int unsigned not null,ep_ex_id int unsigned not null, amt double(11,2) default 0, 
+ep_date datetime not null default now(),primary key(ep_id), foreign key(ep_eid) references employee(eid), foreign key(ep_ex_id) references expense_list(ex_id) 
+on delete cascade);
+
+
+
+
+
+
+
+
+
+

@@ -18,8 +18,14 @@
 			//echo "<pre>"; print_r($_POST) ;  echo "</pre>";
 			
 			mysql_query("update indent set invoiced=1 where indent_no='$_POST[inden_no]'");
+			$indent_date_query=mysql_query("select date_format(i_date,'%d-%m-%Y') as i_date from indent where indent_no='$_POST[inden_no]'");
+			$indent_date_arr=mysql_fetch_assoc($indent_date_query);
+			$indent_date=$indent_date_arr['i_date'];
+			
 			//mysql_query("insert into invoice (in_indent_no,in_c_id,price,in_date) values ('$_POST[inden_no]','$_POST[cli_id]','$_POST[price]',now())");
-			mysql_query("insert into invoice (in_indent_no,in_c_id,in_date) values ('$_POST[inden_no]','$_POST[cli_id]',now())");
+			$insert_invoice_string="insert into invoice (in_indent_no,in_c_id,in_date) values (".$_POST['inden_no'].",".$_POST['cli_id'].",STR_TO_DATE('".$indent_date."','%d-%m-%Y'))";
+			//echo $insert_invoice_string;
+			mysql_query($insert_invoice_string);
 			$build_indent1=mysql_query("select i_item_code from indent_order where i_indent_no='$_POST[inden_no]' ");
 			
 			$q_invoice_no1=mysql_query("select invoice_no from invoice where in_indent_no='$_POST[inden_no]'");
@@ -47,7 +53,7 @@
 				
 				//echo $q_price_detail .$q_invoice_no."this is price and invoice" ."<br>";
 			
-				$query_string="insert into invoice_history (in_h_invoice_no,in_h_indent_no,in_h_item_code,in_h_price,in_date) values ($q_invoice_no,$_POST[inden_no],'$build_arr[i_item_code]',$q_price_detail,now())";
+				$query_string="insert into invoice_history (in_h_invoice_no,in_h_indent_no,in_h_item_code,in_h_price,in_date) values ($q_invoice_no,$_POST[inden_no],'$build_arr[i_item_code]',$q_price_detail,STR_TO_DATE('$indent_date','%d-%m-%Y'))";
 				
 				//echo $query_string . "<br>";
 				mysql_query($query_string);
@@ -69,7 +75,7 @@
 			$cur_due=$cur_due_arr['dues'];
 				
 				
-			mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ('$client_due_arr[in_c_id]',0,$cur_due+$amt,now())");
+			mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ('$client_due_arr[in_c_id]',0,$cur_due+$amt,STR_TO_DATE('$indent_date','%d-%m-%Y'))");
 			
 			
 			mysql_query("update client set dues=($amt+dues) where c_id='$client_due_arr[in_c_id]'");
@@ -158,14 +164,14 @@
               </thead>
               <tbody>
                <?php 
-          		$invoice_result1=mysql_query("select price,indent_no, i_client_id,date_format(i_date,'%b-%h-%Y') as d from indent where invoiced=0");
+          		$invoice_result1=mysql_query("select price,indent_no, i_client_id,date_format(i_date,'%b-%d-%Y') as d from indent where invoiced=0");
           		while($invoice_arr=mysql_fetch_array($invoice_result1)){  	
           		?>
           		
                 <tr>
                 
                   <td><a data-toggle="modal" href=<?php echo "#myModal".$invoice_arr['indent_no'] ; ?>  rel="tooltip"  data-original-title="View Indent"><b><?php echo $invoice_arr['indent_no'] ;?></b> </a></td>
-                  <td><?php echo $invoice_arr['d'] ; ?></td>
+                  <td><?php echo  $invoice_arr['d'] ; ?></td>
                   <?php $shop_result=mysql_query("select shop_name from client where c_id='$invoice_arr[i_client_id]'") ;
                   		$shop_arr=mysql_fetch_assoc($shop_result);
                   		

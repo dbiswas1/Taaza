@@ -7,51 +7,15 @@
 	$conn->connect();
 	$conn->selectdb();
 
-	session_start();	
-	
 
-	if (  isset($_POST['pay_btn']) )
-	{
-		
-	if ($_POST["formid"] == $_SESSION["formid"])
-	{
-		$_SESSION["formid"] = '';
-		//echo '<pre>'; print_r($_POST); echo '</pre>';
-		$cur_due_query=mysql_query("select dues from biller where b_id='$_POST[bl_id]'");
-		$cur_due_arr=mysql_fetch_assoc($cur_due_query);
-		$curr_due= $cur_due_arr['dues'] - $_POST['pay'] ;
-		$insert_query = "insert into bill_payment_master (bill_b_id,paid,date,pay_b_no,dues) values  (". $_POST['bl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $curr_due.   ")";
-		//echo $insert_query;
-		$biller_id = $_POST['bl_id'];
-		//$last_in_amt_query=mysql_query("select amount from invoice where in_c_id=$client_id order by in_date desc limit 1");
-		//$last_in_amt_arr=mysql_fetch_assoc($last_in_amt_query);
-		//$last_in_amt=$last_in_amt_arr['amount'];
-		$pay=$_POST['pay'];
-		
-		//echo "update client set dues=(($last_in_amt+dues)-$pay) where c_id=$client_id";
-		
-		mysql_query($insert_query);
-		mysql_query("update biller set dues=(dues-$pay) where b_id=$biller_id");
-		
-		
-		
-	}
-	else
-		exit ;
-	}
-	else
-	{
-		$_SESSION["formid"] = md5(rand(0,10000000));
-	}
-	
-	
 ?>
+
 
 <!DOCTYPE html>
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari - Purchase Payment Entry</title>
+<title>Taaza Tarkari- Purchase Stock List</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -68,6 +32,8 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
       <![endif]-->
 </head>
+ 
+  
 
 <body>
 <div id="loading"><img src="img/ajax-loader.gif"></div>
@@ -79,115 +45,126 @@
     </li>
   </ul>
 </div>
-	<!-- Responsive part -->
+<?php include 'Menu.php' ; ?>
+<!-- End sidebar_box --> 
 
-		<?php include 'Menu.php' ; ?>
-      <!-- End sidebar_box --> 
       
     </div>
   </div>
 </div>
-<div id="main" style="min-height:1000px">
+<div id="main">
+
+  	
   <div class="container">
 		<?php include 'top.php' ; ?>
+		
 		<!-- End Top Right -->
-    
-
-    
+   
+   <?php 
+   
+   
+		$item_count1 = mysql_query('select count(*) as c from item_master');
+		$item_count2 = mysql_fetch_assoc($item_count1);
+		$item_count=0;
+		$item_count=$item_count2['c'];
+		
+		$row_count=ceil($item_count/3);
+		$limit=0;
+		
+?>
+   
     <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_13">
-          <div class="title">
-            <h4> <span>Make  Purchase Payment </span> </h4>
-          </div>
-          <!-- End .title -->
-          
-          <div class="content top">
-          <form  name="pay_form" action="bill_payment.php?purchase=active&in_purchase=in&b_purchase=active"  onsubmit="return validate();" method="post">
-          
-          		<fieldset>
-                        <div class="form-row control-group row-fluid">
-                          <label class="control-label span2">Chosse a Client</label>
-                          <div class="controls span9">
-                            <select name="bl_id" data-placeholder="Please select.." class="chzn-select">
-                              <option value=""></option>
-                             <?php 
-                             	$client_array=mysql_query("select b_id, market_name from biller ");
-                             	while ($cl_arr = mysql_fetch_array($client_array)) {?>
-                              
-                              <option value="<?php echo $cl_arr['b_id']; ?>"><?php echo $cl_arr['market_name']; ?></option>
-                              <?php } $conn->close(); ?>
-                              
-                            </select>
-                          </div>
-                        </div>
-                        
-                        <div class="form-row control-group row-fluid">
-                          <label class="control-label span2">Select Date</label>
-                          <div class="controls span9">
-                          	<?php $date = date('m-d-Y'); ?>
-                            <input type="text" id="datepicker1"  name="date" value="<?php echo $date ;?>" 	class="row-fluid">
-                          </div>
-                        </div>
-                        
-                        <div class="control-group row-fluid"> 
-                          <!-- Password -->
-                          <label class="control-label span2"  for="name">Voucher no</label>
-                          <div class="controls span9">
-                            <input type="text"  name="vouch" placeholder="0" class="row-fluid" value="0" onfocus="this.select();"  onblur="extractNumber(this,0,false);" onkeyup="extractNumber(this,0,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
-                          </div>
-                        </div>
-                        
-                       <div class="control-group row-fluid"> 
-                          <!-- Password -->
-                          <label class="control-label span2"  for="name">Amount</label>
-                          <div class="controls span9">
-                            <input type="text"  name="pay" placeholder="0"  value="0.00" class="row-fluid" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
-                          </div>
-                        </div>
-                  
-                       
-                     
-                      </fieldset>
-                      
-                   <div class="description content">
-                    <ul class="pager wizard mb5">
-                      <li class="previous ">
-                        <button class="btn btn-primary pull-left btn-large"><i class="icon-caret-left"></i> Cancel</button>
-                      </li>
-                      <li class="next">
-                        <button class="btn btn-primary btn-large pull-right" name="pay_btn" type="submit" value="pressed">Make Payment <i class="icon-caret-right"></i></button>
-                      </li>
-                      
-                    </ul>
-                  </div>
-          		
-  
-            <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
-            </form>
-          </div>
-          <!-- End .content --> 
-        </div>
-        <!-- End box --> 
-      </div>
-      <!-- End .row-fluid --> 
-      
-    </div>
-  
-    	
-    
-    
-    <!-- End #container --> 
-  </div>
-  
+        <div class="span12">
+        
+   
+      <form id=pristock action="Stock_List.php?stock=active&p_stock=active" method="post">
+         
+          <div class="box paint color_8">
+            <div class="title">
+            
+              	<h4> <i class="icon-book"></i><span> Stock To Purchase </span> </h4>
+            	
+            </div>
 
-  
-  
-  
-  
-  
-  
-    		<?php include 'foot.php' ; ?>
+            
+            <div class="content top ">
+              <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
+                <thead>
+                
+                  <tr>
+                    <th class="no_sort"> Sl#</th>
+                    <th class="no_sort"> Item </th>
+                    <th class="no_sort"> Qty</th>
+                    <th class="no_sort"> Sl# </th>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+                     <th class="no_sort"> Sl# </th>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+				   </tr>
+                </thead>
+                
+                
+                
+            	<tbody>
+            	<?php $sl_no=0; for ($i=0 ; $i<$row_count ; $i++){ 
+                	$result = mysql_query("select s.s_item_code, s.s_id ,i.item, s.primary_stock  from inventory s, item_master i where s.s_item_code=i.item_code and s.primary_stock < 0  limit $limit,3") or die(mysql_error());
+                	
+                ?>
+                  <tr>
+                  <?php 
+                  	
+                  	while($stock_arr = mysql_fetch_array( $result ))
+                  		{
+                  ?>
+                    <td><?php echo ++$sl_no ;?></td>
+                    <td><?php echo $stock_arr['item'] ;?></td>
+                   <td><?php echo $stock_arr['primary_stock'] ;?></td>
+                    
+                    
+                    
+                    
+                   <?php }
+                   $limit=$limit+3; ?>
+                    
+                  </tr>
+                  <?php } $conn->close();?>
+                  
+                  </tbody>
+              </table>
+            
+         
+
+        </div>
+        
+        
+        <!-- End Content -->
+                  
+       <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_purchase_stock_list.php';"  class="btn ">Print</button></a> </p>
+        </div>
+        </form>
+        
+              
+        
+        	 
+                 
+        
+        
+        <!-- End Box --> 
+        
+        
+        	 
+      </div>
+      <!-- End span12 -->
+    </div>
+    
+     
+      
+            
+   
+  </div> <!-- End #container -->
+   		<?php include 'foot.php' ; ?>
 		 <!-- End Footer -->
 <div class="background_changer dropdown">
   <div class="dropdown" id="colors_pallete"> <a data-toggle="dropdown" data-target="drop4" class="change_color"></a>
@@ -220,24 +197,17 @@
       <li><a data-color="color_25" class="color_25" tabindex="-1">25</a></li>
     </ul>
   </div>
-        
-  
 </div>
 <!-- End .background_changer -->
-<!-- /container --> 
-<div class="avgrund-popup  stack modal" id="default-popup" >
-  <div class="modal-header">
-    <h3 id="myModalLabel">Confirm</h3>
-  </div>
-  <div class="modal-body">
-    <p> Do you want to Delte the Client </p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-primary" onclick="javascript:formSubmit();">Delete</button>
-    <button class="btn btn-primary" onclick="javascript:closeDialog();">Close</button>
-  </div>
 </div>
-<div class="avgrund-cover"></div>
+<!-- /container --> 
+
+
+
+
+
+
+
 
 <!-- Le javascript
     ================================================== --> 
@@ -245,7 +215,7 @@
 <script src="js/jquery.js" type="text/javascript"> </script> 
 <!--[if !IE]> -->
 <script src="js/plugins/enquire.min.js" type="text/javascript"></script> 
-<!-- <![endif]--> 
+<!-- <![endif]-->
 <script language="javascript" type="text/javascript" src="js/plugins/jquery.sparkline.min.js"></script> 
 <script src="js/plugins/excanvas.compiled.js" type="text/javascript"></script> 
 <script src="js/bootstrap-transition.js" type="text/javascript"></script> 
@@ -279,36 +249,11 @@
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-datepicker.js"></script> 
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-colorpicker.js"></script> 
 
-<!-- Forms Wizard --> 
-<script language="javascript" type="text/javascript" src="js/plugins/wizard-master/jquery.bootstrap.wizard.js"></script> 
-
 <!-- Custom made scripts for this template --> 
 <script src="js/scripts.js" type="text/javascript"></script> 
-<script type="text/javascript">
-  /**** Specific JS for this page ****/
 
-function validate()
-{
+<script>
 
-	y=document.forms["pay_form"]["pay"].value;
-	x=document.forms["pay_form"]["bl_id"].value;
-	z=document.forms["pay_form"]["vouch"].value;
-	if (x == "" || y == "" || x == null || y == null || y =="0.00" || y == 0 || z == null || z == 0 || z == "" ) {
-	
-		alert ('Market Name, Voucher Number and Amount are mandatory');
-		return false;
-	}
-	
-	else{
-		document.indentform.submit();
-		return true;
-	}
-		
-   
-} 
-  
-
-  
 function extractNumber(obj, decimalPlaces, allowNegative)
 {
 	var temp = obj.value;
@@ -385,20 +330,22 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
 	
 	return isFirstN || isFirstD || reg.test(keychar);
 }
-  
-  
-  
-  
-  
-  
+                   
 
+
+</script>
+
+
+
+<script type="text/javascript">
+  /**** Specific JS for this page ****/
  $(document).ready(function () {
        
         $('textarea.autogrow').autogrow();
         var elem = $("#chars");
-        // $("#text").limiter(100, elem);
+        $("#text").limiter(100, elem);
         // Mask plugin http://digitalbush.com/projects/masked-input-plugin/
-        $("#mask-phone").mask("999-999-9999");
+        $("#mask-phone").mask("(999) 999-9999");
         $("#mask-date").mask("99-99-9999");
         $("#mask-int-phone").mask("+33 999 999 999");
         $("#mask-tax-id").mask("99-9999999");
@@ -416,40 +363,43 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         $('#datepicker1').datepicker({
           format: 'mm-dd-yyyy'
         });
+        $('#datepicker7').datepicker({
+            format: 'mm-dd-yyyy'
+          });
         $('#datepicker2').datepicker();
         $('.colorpicker').colorpicker()
         $('#colorpicker3').colorpicker();
+
+        $(document).ready(function() {
+            $("#myInput").keyup(validateInput);
+        });
+        
     });
 
-    $(document).ready(function() {
-      $('#rootwizard').bootstrapWizard({onTabShow: function(tab, navigation, index) {
-      var $total = navigation.find('li').length;
-      var $current = index+1;
-      var $percent = ($current/$total) * 100;
-      $('#rootwizard').find('.bar').css({width:$percent+'%'});
-      
-      // If it's the last tab then hide the last button and show the finish instead
-      if($current >= $total) {
-        $('#rootwizard').find('.pager .next').hide();
-        $('#rootwizard').find('.pager .finish').show();
-        $('#rootwizard').find('.pager .finish').removeClass('disabled');
-      } else {
-        $('#rootwizard').find('.pager .next').show();
-        $('#rootwizard').find('.pager .finish').hide();
-      }
-      
-    }});
-    // $('#rootwizard .finish').click(function() {
-    //   alert('Finished! Starting over!');
-    //   $('#rootwizard').find("a[href*='tab1']").trigger('click');
-    // }); 
-   
-  }); 
+
+ function hasWhiteSpaceOrEmpty(s) 
+ {
+   return s == "" || s.indexOf(' ') >= 0;
+ }
+
+ function validateInput()
+ {
+     var inputVal = $("#Textinput").val();
+     if(hasWhiteSpaceOrEmpty(inputVal))
+     {
+         //This has whitespace or is empty, disable the button
+         $("#add").attr("disabled", "disabled");
+     }
+     else
+     {
+         //not empty or whitespace
+         $("#add").removeAttr("disabled");
+     }
+ }
+
+
+
 
 </script>
-
-
-
-
 </body>
 </html>

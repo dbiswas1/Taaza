@@ -287,7 +287,7 @@
   
 function validate(x)
 {
-	if (!x == '') {
+	if (!x == '' ) {
 		document.purchaseform.submit();
 		return true;
 	}

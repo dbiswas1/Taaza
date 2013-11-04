@@ -107,12 +107,21 @@ payment_master where pay_c_id=3 and date <=
 DATE_SUB(STR_TO_DATE('Oct-20-2013','%b-%d-%Y'),INTERVAL
 1 DAY) and paid != 0 order by pay_id desc limit 1;
 
+select * from item_master;
 
-select pay_id,date_format('%b-%d-%Y',date) as
+select pay_id,date_format(date,'%b-%d-%Y') as
 date, dues from payment_master where pay_c_id=3 and date
 <= DATE_SUB(STR_TO_DATE('Oct-23-2013','%b-
-%d-%Y'),INTERVAL 1 DAY) order by pay_id desc limit 1select
+%d-%Y'),INTERVAL 1 DAY) order by pay_id desc limit 1;
+select
 pay_id,date_format('%b-%d-%Y',date) as date, paid from
 payment_master where pay_c_id=3 and date <=
 DATE_SUB(STR_TO_DATE('Oct-23-2013','%b-%d-%Y'),INTERVAL
-1 DAY) and paid != 0 order by pay_id desc limit 1
+1 DAY) and paid != 0 order by pay_id desc limit 1;
+
+select * from inventory;
+
+select * from wastage_history;
+
+
+select price,indent_no, i_client_id,date_format(i_date,'%b-%d-%Y') as d from indent where invoiced=0;

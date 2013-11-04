@@ -291,10 +291,12 @@ function validate()
 {
 
 	y=document.forms["pay_form"]["pay"].value;
-	x=document.forms["pay_form"]["cl_id"].value
-	if (x == "" || y == "" || x == null || y == null ) {
+	x=document.forms["pay_form"]["cl_id"].value;
+	z=document.forms["pay_form"]["vouch"].value;
 	
-		alert ('Client Name and Amount are mandatory');
+	if (x == "" || y == "" || x == null || y == null || y =="0.00" || y == 0 || z == null || z == 0 || z == "") {
+	
+		alert ('Client Name, Reciept Number and Amount are mandatory');
 		return false;
 	}
 	

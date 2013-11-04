@@ -147,11 +147,12 @@
             <li class="active"><a href="Stock_List.php?stock=active&w_stock=active">Wastage List</a></li>
          <?php } else { ?>
          	 <li><a href="Stock_List.php?stock=active&w_stock=active">Wastage List</a></li>
-         <?php } ?>
+         <?php }if (isset($_GET['ps_stock']) ) { ?>
          
-            <li><a href="#">Place Holder</a></li>
-           
-           
+            <li><a href="Stock_Purchase_List.php?stock=active&ps_stock=active">Stock to Purchase</a></li>
+         <?php } else { ?> 
+            <li><a href="Stock_Purchase_List.php?stock=active&ps_stock=active">Stock to Purchase</a></li>
+           <?php } ?>
    		  </ul>
          </li>
          

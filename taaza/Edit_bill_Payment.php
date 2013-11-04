@@ -85,7 +85,7 @@
     
     <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_24">
+        <div class="box color_13">
           <div class="title">
             <h4> <span>Edit  Payment </span> </h4>
           </div>

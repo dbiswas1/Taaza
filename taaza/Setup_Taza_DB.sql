@@ -73,22 +73,26 @@ create table payment_master (pay_id int unsigned not null auto_increment, pay_c_
 pay_v_no int unsigned default 0 , primary key(pay_id), foreign key(pay_c_id) references client(c_id) on delete cascade);
 
 
+
 -- Create Purchase tables
 
 create table biller (b_id int Not Null auto_increment , market_name varchar(100), biller_name varchar(100), dues double(11,2) default 0,
 ph_num varchar(100), address varchar(100), status tinyint(1) not null default 1, join_date DATETIME NOT NULL DEFAULT now(),
  PRIMARY KEY (b_id));
 
+
+
 Create table purchase_order (p_id int unsigned not null auto_increment, p_qty double(11,2) default 0, p_price double(11,2) default 0,
 pu_item_code int not null, p_b_id int  not null, p_date datetime not null, primary key(p_id) , foreign key (pu_item_code) references item_master(item_code) ,
  foreign key(p_b_id) references biller(b_id) on delete cascade
 );
 
+create table bill_payment_master (bl_id int unsigned not null auto_increment, bill_b_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
+pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) references biller(b_id) on delete cascade);
+
 -- Wastage History
 create table wastage_history (w_id int unsigned not null auto_increment,w_item_code int not null, qty double (9,2), date datetime default now(), primary key(w_id),  
 foreign key(w_item_code) references item_master(item_code) on delete cascade );
 
--- Biller Payment Table 
+ 
 
-create table bill_payment_master (bl_id int unsigned not null auto_increment, bill_b_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
-pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) references biller(b_id) on delete cascade);

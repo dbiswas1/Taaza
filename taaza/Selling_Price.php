@@ -219,6 +219,8 @@
               </table>
             	 
             	 <p align="center"> <button  type="submit" name="p1_btn" value="p1_v" class="btn btn-primary">Save changes</button> </p>
+            	 <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=0';"  class="btn ">Print</button></a> </p>
+            	 
 				<input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				</div>
               </form> 
@@ -270,6 +272,7 @@
                 </table>
               <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
               <p align="center"> <button name="p2_btn" value="p2_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
+              <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=1';"  class="btn ">Print</button></a> </p>
 
                 </div>
                 </form>
@@ -321,6 +324,7 @@
                           </table>
                           <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				    <p align="center"> <button name=sec_btn value="se_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
+				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=2';"  class="btn ">Print</button></a> </p>
                 </div>
              </form>
              <?php } ?>
@@ -370,6 +374,7 @@
                           </table>
                           <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				    <p align="center"> <button name=pur_btn value="se_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
+				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=3';"  class="btn ">Print</button></a> </p>
                 </div>
              </form>
              <?php } ?>

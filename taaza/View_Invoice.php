@@ -23,6 +23,11 @@
 				$indent_no_1=mysql_query("select in_c_id,amount,in_indent_no from invoice where invoice_no='$_POST[del_invoice]'");
 				$indent_arr1=mysql_fetch_assoc($indent_no_1);
 				mysql_query("update indent set invoiced=0 where indent_no='$indent_arr1[in_indent_no]'");
+				
+				$indent_date_query=mysql_query("select date_format(i_date,'%d-%m-%Y') as i_date from indent where indent_no='$indent_arr1[in_indent_no]'");
+				$indent_date_arr=mysql_fetch_assoc($indent_date_query);
+				$indent_date=$indent_date_arr['i_date'];
+				
 				mysql_query("delete from invoice_history where in_h_indent_no='$indent_arr1[in_indent_no]'");
 				mysql_query("delete from invoice where invoice_no='$_POST[del_invoice]'");
 				mysql_query("update client set dues=dues-'$indent_arr1[amount]' where c_id='$indent_arr1[in_c_id]'");
@@ -31,7 +36,7 @@
 				$cur_due_arr=mysql_fetch_assoc($cur_due_query);
 				$cur_due=$cur_due_arr['dues'];
 				
-				mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ('$indent_arr1[in_c_id]',0,$cur_due,now())");
+				mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ('$indent_arr1[in_c_id]',0,$cur_due,STR_TO_DATE('$indent_date','%d-%m-%Y'))");
 			}
 			
 			if(isset($_POST["in_ed_btn"]))
@@ -61,12 +66,20 @@
 					
 				$due_amt_diff=$amt-$old_amt;
 				$due_client_id=$old_amt_arr['in_c_id'];
+				
+				
 					
 				//echo "Due Iff is $due_amt_diff";
 				
 				mysql_query("update invoice set amount=$amt where invoice_no='$_POST[invoice_ch_no]'");
 				mysql_query("update client set dues=dues+$due_amt_diff where c_id=$due_client_id" );
-				mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ($due_client_id,0,(select dues from client where c_id=$due_client_id),now())");
+				
+				
+				$invoice_date_query=mysql_query("select date_format(in_date,'%d-%m-%Y') as in_date from invoice where invoice_no='$_POST[invoice_ch_no]'");
+				$invoice_date_arr=mysql_fetch_assoc($invoice_date_query);
+				$invoice_date=$invoice_date_arr['in_date'];
+				
+				mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ($due_client_id,0,(select dues from client where c_id=$due_client_id),STR_TO_DATE('$invoice_date','%d-%m-%Y'))");
 				
 			}
 			

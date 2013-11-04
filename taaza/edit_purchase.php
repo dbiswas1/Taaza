@@ -110,9 +110,9 @@
                      <!--   <option   value=""></option> -->
                       
                       <option value="<?php echo $_GET['gen_b_id']; ?>" selected><?php echo $_GET['gen_b_name']; ?></option>
-                      <?php while ($biller_list_arr=mysql_fetch_array($biller_list_query)) {?>
-                      	<option value="<?php echo $biller_list_arr['b_id']; ?>" ><?php echo $biller_list_arr['market_name']; ?></option>
-                      <?php }?>
+                      <?php //while ($biller_list_arr=mysql_fetch_array($biller_list_query)) {?>
+                      	<!--  <option value="<?php //echo $biller_list_arr['b_id']; ?>" ><?php //echo $biller_list_arr['market_name']; ?> </option> -->
+                      <?php //}?>
                    
                </select>
                </div>
