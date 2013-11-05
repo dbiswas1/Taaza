@@ -34,7 +34,7 @@
 				mysql_query($str);
 				mysql_query("update inventory set primary_stock=primary_stock+'$_POST[$i_idx]' where s_item_code=$i_idx");
 				
-				$avg_string="select TRUNCATE(avg(p_price/p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
+				$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
 				
 				//echo $avg_string;
 				
@@ -94,7 +94,7 @@
 					//echo $update_purchase_string."<br>";
 					mysql_query($update_purchase_string);
 					
-					$avg_string="select TRUNCATE(avg(p_price/p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
+					$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
 					
 					//echo $avg_string;
 					
@@ -119,7 +119,7 @@
 					//echo $update_inventory_string;
 					mysql_query("update inventory set primary_stock=primary_stock+ $_POST[$i_idx] where s_item_code=$i_idx");
 					
-					$avg_string="select TRUNCATE(avg(p_price/p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
+					$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
 					
 					//echo $avg_string;
 				

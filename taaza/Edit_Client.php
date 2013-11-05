@@ -97,14 +97,14 @@ else
                 <div class="form-row control-group row-fluid">
                   <label class="control-label span3" for="normal-field" >Shop Name</label>
                   <div class="controls span4">
-                    <input type="text" id="normal-field" class="row-fluid" name="E_shop_name" value=<?php echo $client_details['shop_name'];?> >
+                    <input type="text" id="normal-field" class="row-fluid" name="E_shop_name" value="<?php echo $client_details['shop_name'];?>" >
                   </div>
                 </div>
                 
                 <div class="form-row control-group row-fluid">
                   <label class="control-label span3" for="normal-field" >Client Name</label>
                   <div class="controls span4">
-                    <input type="text" id="normal-field" class="row-fluid" name="E_client_name" value=<?php echo $client_details['client_name'];?> >
+                    <input type="text" id="normal-field" class="row-fluid" name="E_client_name" value="<?php echo $client_details['client_name'];?>" >
                   </div>
                   
                 </div>

@@ -68,7 +68,8 @@
 		
 		
 			}
-			mysql_query("update indent set price='$_POST[price]' ,notes='$_POST[notes]' where indent_no= '$_POST[indent_no_gen]'");
+			mysql_query("update indent set price='$_POST[price]' ,notes='$_POST[notes]', i_date=STR_TO_DATE('$_POST[idate]','%m-%d-%Y') where indent_no= '$_POST[indent_no_gen]'");
+			
 			//echo $_POST["price"];
 			
 		}
