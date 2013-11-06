@@ -5,6 +5,9 @@ create database taaza_tarkari ;
 use taaza_tarkari ;
 
 -- Drop all Tables
+drop table expense;
+drop table expense_type;
+drop table employee;
 drop table wastage_history;
 drop table purchase_order;
 drop table biller;
@@ -93,6 +96,17 @@ pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) refe
 -- Wastage History
 create table wastage_history (w_id int unsigned not null auto_increment,w_item_code int not null, qty double (9,2), date datetime default now(), primary key(w_id),  
 foreign key(w_item_code) references item_master(item_code) on delete cascade );
+
+-- Expense table
+
+create table expense_type (ex_id int(11) unsigned not null auto_increment, ex_type varchar(200), primary key(ex_id));
+
+create table employee (emp_id int(10) unsigned not null auto_increment, emp_name varchar(50), emp_due double(10,2) default 0, emp_salary double(10,2) default 0,
+primary key(emp_id) );
+
+create table expense (exp_id int(15) unsigned not null auto_increment, exp_ex_id int(11) unsigned not null, exp_emp_id int(10) unsigned not null ,
+rec_no int(15) unsigned, exp_date datetime, ex_amount double(10,2), primary key(exp_id), foreign key(exp_ex_id) references expense_type(ex_id),
+foreign key(exp_emp_id) references employee(emp_id) on delete cascade);
 
  
 

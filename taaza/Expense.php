@@ -9,29 +9,39 @@
 
 	session_start();	
 	
-
-	if (  isset($_POST['pay_btn']) )
+	//echo '<pre>'; print_r($_POST); echo '</pre>';
+	if (  isset($_POST['pay_btn']) || isset($_POST['ex_txt']) || isset($_POST['emp_txt']))
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
 	{
 		$_SESSION["formid"] = '';
 		//echo '<pre>'; print_r($_POST); echo '</pre>';
-		$cur_due_query=mysql_query("select dues from biller where b_id='$_POST[bl_id]'");
-		$cur_due_arr=mysql_fetch_assoc($cur_due_query);
-		$curr_due= $cur_due_arr['dues'] - $_POST['pay'] ;
-		$insert_query = "insert into bill_payment_master (bill_b_id,paid,date,pay_b_no,dues) values  (". $_POST['bl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $curr_due.   ")";
-		//echo $insert_query;
-		$biller_id = $_POST['bl_id'];
-		//$last_in_amt_query=mysql_query("select amount from invoice where in_c_id=$client_id order by in_date desc limit 1");
-		//$last_in_amt_arr=mysql_fetch_assoc($last_in_amt_query);
-		//$last_in_amt=$last_in_amt_arr['amount'];
-		$pay=$_POST['pay'];
+	
+		if (  isset($_POST['pay_btn']))
+		{
+			$insert_query = "insert into expense (exp_ex_id,exp_emp_id,exp_date,rec_no,ex_amount) values  (". $_POST['ex_id'].",".$_POST['em_id'] .",STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $_POST['pay'].")";
+			//echo $insert_query;
+			
+
 		
-		//echo "update client set dues=(($last_in_amt+dues)-$pay) where c_id=$client_id";
+			mysql_query($insert_query);
+			
+		}
 		
-		mysql_query($insert_query);
-		mysql_query("update biller set dues=(dues-$pay) where b_id=$biller_id");
+		if (isset($_POST['ex_txt']))
+		{
+			//echo "This is test".$_POST['ex_txt'];
+			//echo "insert into expense_type (ex_type) values ('$_POST[ex_txt]')";
+			
+			mysql_query("insert into expense_type (ex_type) values ('$_POST[ex_txt]')");
+		}
+		if (isset($_POST['emp_txt']))
+		{
+		
+				
+			mysql_query("insert into employee (emp_name) values ('$_POST[emp_txt]')");
+		}
 		
 		
 		
@@ -51,7 +61,7 @@
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari - Purchase Payment Entry</title>
+<title>Taaza Tarkari - Expense Entry</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -96,28 +106,45 @@
     
     <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_13">
+        <div class="box color_5">
           <div class="title">
-            <h4> <span>Make  Purchase Payment </span> </h4>
+            <h4> <span>Make Expense Payment </span> </h4>
           </div>
           <!-- End .title -->
           
           <div class="content top">
-          <form  name="pay_form" action="bill_payment.php?purchase=active&in_purchase=in&b_purchase=active"  onsubmit="return validate();" method="post">
+          <form  name="pay_form" action="Expense.php?expense=active&a_expense=active"  onsubmit="return validate();" method="post">
           
           		<fieldset>
                         <div class="form-row control-group row-fluid">
-                          <label class="control-label span2">Chosse a Client</label>
+                          <label class="control-label span2">Expense Type</label>
                           <div class="controls span9">
-                            <select name="bl_id" data-placeholder="Please select.." class="chzn-select">
+                            <select name="ex_id" data-placeholder="Please select.." class="chzn-select" onchange="addoption(this.options[this.selectedIndex].value);">
                               <option value=""></option>
                              <?php 
-                             	$client_array=mysql_query("select b_id, market_name from biller ");
-                             	while ($cl_arr = mysql_fetch_array($client_array)) {?>
+                             	$expense_array=mysql_query("select ex_id, ex_type from expense_type order by ex_type ");
+                             	while ($ex_arr = mysql_fetch_array($expense_array)) {?>
                               
-                              <option value="<?php echo $cl_arr['b_id']; ?>"><?php echo $cl_arr['market_name']; ?></option>
+                              <option value="<?php echo $ex_arr['ex_id']; ?>"><?php echo $ex_arr['ex_type']; ?></option>
+                              <?php }  ?>
+                             
+                              <option value="add">Add Type</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-row control-group row-fluid">
+                          <label class="control-label span2">Person Name</label>
+                          <div class="controls span9">
+                            <select name="em_id" data-placeholder="Please select.." class="chzn-select" onchange="addoption1(this.options[this.selectedIndex].value);">
+                              <option value=""></option>
+                             <?php 
+                             	$employee_array=mysql_query("select emp_id, emp_name from employee order by emp_name ");
+                             	while ($emp_arr = mysql_fetch_array($employee_array)) {?>
+                              
+                              <option value="<?php echo $emp_arr['emp_id']; ?>"><?php echo $emp_arr['emp_name']; ?></option>
                               <?php } $conn->close(); ?>
-                              
+                             
+                              <option value="addp">Add Person</option>
                             </select>
                           </div>
                         </div>
@@ -132,7 +159,7 @@
                         
                         <div class="control-group row-fluid"> 
                           <!-- Password -->
-                          <label class="control-label span2"  for="name">Voucher no</label>
+                          <label class="control-label span2"  for="name">Reciept no</label>
                           <div class="controls span9">
                             <input type="text"  name="vouch" placeholder="0" class="row-fluid" value="0" onfocus="this.select();"  onblur="extractNumber(this,0,false);" onkeyup="extractNumber(this,0,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
                           </div>
@@ -227,20 +254,115 @@
 <!-- /container --> 
 <div class="avgrund-popup  stack modal" id="default-popup" >
   <div class="modal-header">
-    <h3 id="myModalLabel">Confirm</h3>
+    <h3 id="myModalLabel">Add Expense Type</h3>
   </div>
+ <form name="addtype" action="Expense.php?expense=active&a_expense=active" method="POST">
   <div class="modal-body">
-    <p> Do you want to Delte the Client </p>
+  
+  	<table class="table table-condensed table-striped">
+                  			
+    <tr>  
+    <td class="to_hide_phone"><p> <input class="row-fluid span4"  id="exinput" autofocus="autofocus"  name="ex_txt" type="text"  >  </p></td>
+    </tr>
+    </table>
+    <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" onclick="javascript:formSubmit();">Delete</button>
-    <button class="btn btn-primary" onclick="javascript:closeDialog();">Close</button>
+    <button name="ex_add" type="button" value="click" class="btn" onclick="javascript:add_ex_type();">Add</button>
+    <script type="text/javascript">
+	function add_ex_type()
+	{
+		if(document.forms.addtype.ex_txt.value == null || document.forms.addtype.ex_txt.value == '' )
+		{
+			
+			alert("Enter a Proper value");
+			return false;
+		}
+		else
+		{
+			document.forms.addtype.submit();
+		}
+	}
+
+    </script>
+    
+    <button class="btn" type="button" onclick="javascript:closeDialog();">Close</button>
+    
+    
   </div>
+  </form>
+</div>
+<div class="avgrund-cover"></div>
+<div class="avgrund-popup  stack modal" id="default-popup1" >
+  <div class="modal-header">
+    <h3 id="myModalLabel">Add Person</h3>
+  </div>
+ <form name="addemp" action="Expense.php?expense=active&a_expense=active" method="POST">
+  <div class="modal-body">
+  
+  	<table class="table table-condensed table-striped">
+                  			
+    <tr>  
+    <td class="to_hide_phone"><p> <input class="row-fluid span4"  id="empinput" autofocus="autofocus"  name="emp_txt" type="text"  >  </p></td>
+    </tr>
+    </table>
+    <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
+  </div>
+  <div class="modal-footer">
+    <button name="ex_add" type="button" value="click" class="btn" onclick="javascript:add_emp_type();">Add</button>
+    <script type="text/javascript">
+	function add_emp_type()
+	{
+		if(document.forms.addemp.emp_txt.value == null || document.forms.addemp.emp_txt.value == '' )
+		{
+			
+			alert("Enter a Proper value");
+			return false;
+		}
+		else
+		{
+			document.forms.addemp.submit();
+		}
+	}
+
+    </script>
+    
+    <button class="btn" type="button" onclick="javascript:closeDialog();">Close</button>
+    
+    
+  </div>
+  </form>
 </div>
 <div class="avgrund-cover"></div>
 
 <!-- Le javascript
     ================================================== --> 
+    
+    
+ <!-- Modal Concept --> 
+<script language="javascript" type="text/javascript" src="js/plugins/avgrund.js"></script> 
+<script src="js/bootstrap-transition.js" type="text/javascript"></script> 
+<script src="js/bootstrap-alert.js" type="text/javascript"></script> 
+<script src="js/bootstrap-modal.js" type="text/javascript"></script> 
+<script src="js/bootstrap-dropdown.js" type="text/javascript"></script> 
+<script src="js/bootstrap-scrollspy.js" type="text/javascript"></script> 
+<script src="js/bootstrap-tab.js" type="text/javascript"></script> 
+<script src="js/bootstrap-tooltip.js" type="text/javascript"></script> 
+<script src="js/bootstrap-popover.js" type="text/javascript"></script> 
+<script src="js/bootstrap-button.js" type="text/javascript"></script> 
+<script src="js/bootstrap-collapse.js" type="text/javascript"></script> 
+<script src="js/bootstrap-carousel.js" type="text/javascript"></script> 
+<script src="js/bootstrap-typeahead.js" type="text/javascript"></script> 
+<script src="js/bootstrap-affix.js" type="text/javascript"></script> 
+<script src="js/fileinput.jquery.js" type="text/javascript"></script> 
+<script src="js/jquery-ui-1.8.23.custom.min.js" type="text/javascript"></script> 
+<script src="js/jquery.touchdown.js" type="text/javascript"></script> 
+<script language="javascript" type="text/javascript" src="js/plugins/jquery.uniform.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/plugins/jquery.tinyscrollbar.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/jnavigate.jquery.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/jquery.touchSwipe.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/plugins/jquery.peity.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/plugins/chosen/chosen/chosen.jquery.min.js"></script>    
 <!-- General scripts --> 
 <script src="js/jquery.js" type="text/javascript"> </script> 
 <!--[if !IE]> -->
@@ -286,16 +408,69 @@
 <script src="js/scripts.js" type="text/javascript"></script> 
 <script type="text/javascript">
   /**** Specific JS for this page ****/
+  
+function addoption(x)
+  {
+		if (x == "add")
+		{
+			//alert("in add section")
+			openDialog();
+		}
+		else
+		{
+			return true;
+		}
+
+	}
+
+function addoption1(y)
+{
+		if (y == "addp")
+		{
+			//alert("in add section")
+			openDialog1();
+		}
+		else
+		{
+			return true;
+		}
+
+	}
+
+
+function openDialog() {
+	
+	//global_invoice=value;
+	//alert("openDialog");
+	Avgrund.show( "#default-popup" );
+  
+}
+function closeDialog() {
+  Avgrund.hide();
+}
+
+function openDialog1() {
+	
+	//global_invoice=value;
+	//alert("openDialog");
+	Avgrund.show( "#default-popup1" );
+  
+}
+function closeDialog1() {
+  Avgrund.hide();
+}
+
 
 function validate()
 {
-
+	w=document.forms["pay_form"]["em_id"].value;
 	y=document.forms["pay_form"]["pay"].value;
-	x=document.forms["pay_form"]["bl_id"].value;
+	x=document.forms["pay_form"]["ex_id"].value;
 	z=document.forms["pay_form"]["vouch"].value;
-	if (x == "" || y == "" || x == null || y == null || y =="0.00" || y == 0 || z == null || z == 0 || z == "" ) {
 	
-		alert ('Market Name, Voucher Number and Amount are mandatory');
+	if (x == "" || y == "" || x == null || y == null || y =="0.00" || y == 0 || z == null || z == 0 || z == "" || w == "" || w == null ) {
+	
+		alert ('Expense Type,Person Name, Reciept Number and Amount are mandatory');
 		return false;
 	}
 	
@@ -415,9 +590,11 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         // Datepicker
         $('#datepicker1').datepicker({
           format: 'mm-dd-yyyy'
+        
         }).on('changeDate', function (ev) {
             $(this).datepicker('hide');
         });;
+      
         $('#datepicker2').datepicker();
         $('.colorpicker').colorpicker()
         $('#colorpicker3').colorpicker();

@@ -189,12 +189,37 @@
             
           </ul>
         </li>
+        
+          <?php if(isset($_GET['expense']) ) { ?>
+            <li class="accordion-group color_5 active" > <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse7"> <img src="img/menu_icons/rupee.png"><span>Expense</span></a>
+          	<ul id="collapse7" class="accordion-body collapse in">
+          <?php }else {?>
+          	<li class="accordion-group color_5" > <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse7"> <img src="img/menu_icons/rupee.png"><span>Expense</span></a>
+          	<ul id="collapse7" class="accordion-body collapse ">
+          <?php } if (isset($_GET['a_expense'])) {?>
+            <li class="active"><a href="Expense.php?expense=active&a_expense=active">Add Expense</a></li>
+            <?php }else {?>
+            <li><a href="Expense.php?expense=active&a_expense=active">Add Expense</a></li>
+            <?php }if (isset($_GET['v_expense'])) {?>
+            <li class="active"><a href="View_Expense.php?expense=active&v_expense=active">View Expense</a></li>
+            <?php } else { ?>
+            <li><a href="View_Expense.php?expense=active&v_expense=active">View Expense</a></li>
+            <?php } ?>
+            <li><a href="#">Detailed View</a></li>
+            <li><a href="#">Register Employee</a></li>
+            <li><a href="#">View Employee</a></li>
+            
+            
+          </ul>
+        </li>
+        
         <li class="accordion-group color_19"> <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse6"> <img src="img/menu_icons/statistics.png"><span>Reports</span></a>
           <ul id="collapse6" class="accordion-body collapse">
             <li><a href="#">Place Holder</a></li>
             <li><a href="#">Place Holder</a></li>
           </ul>
         </li>
+      
         
         <li class="color_13"> <a class="widgets" href="#"> <img src="img/menu_icons/calendar.png"><span>Calendar</span></a> </li>
         

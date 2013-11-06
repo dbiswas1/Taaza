@@ -125,3 +125,21 @@ select * from wastage_history;
 
 
 select price,indent_no, i_client_id,date_format(i_date,'%b-%d-%Y') as d from indent where invoiced=0;
+
+
+select * from expense;
+select * from expense_type;
+insert into expense_type (ex_type) values ('Diesel');
+
+select ex_id, ex_type from expense_type;
+
+select  * from expense_type;
+select emp_id, emp_name from employee order by emp_name ;
+
+select exp.exp_id,ex.ex_id,em.emp_id,ex.ex_type,em.emp_name,exp.exp_date,exp.rec_no,exp.ex_amount from expense_type ex, employee em,expense exp 
+where exp.exp_ex_id=ex.ex_id and em.emp_id=exp.exp_emp_id and exp.exp_id=1 order by exp.exp_date desc; 
+
+select exp.exp_id,ex.ex_id,em.emp_id,ex.ex_type,em.emp_name,date_fromat(exp.exp_date,'%m-%d-%Y') as exp_date,exp.rec_no,exp.ex_amount from expense_type ex, employee em,expense exp where exp.exp_ex_id=ex.ex_id and em.emp_id=exp.exp_emp_id and exp.exp_id=1;
+
+
+select ex_id, ex_type from expense_type order by ex_type where ex_id != 3;
