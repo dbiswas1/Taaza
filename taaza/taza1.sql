@@ -217,7 +217,7 @@ create table expense (ep_id int unsigned not null auto_increment, notes varchar(
 ep_date datetime not null default now(),primary key(ep_id), foreign key(ep_eid) references employee(eid), foreign key(ep_ex_id) references expense_list(ex_id) 
 on delete cascade);
 
-
+SHOW PROCESSLIST;
 
 
 

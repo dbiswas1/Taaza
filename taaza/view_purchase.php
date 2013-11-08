@@ -265,7 +265,7 @@
                   	<div class="btn-group"> 
                   		<a class="btn btn-small"  href="edit_purchase.php?purchase=active&v_purchase=active&pu_date=<?php echo $view_in_arr['pu_date'];?>&gen_b_name=<?php echo $view_in_arr['market_name']; ?> &gen_b_id=<?php echo $view_in_arr['b_id']; ?>" rel="tooltip" data-placement="top" data-original-title=" Edit Purchase "><i class="gicon-edit"></i></a> 
                   		<!--  <a class="btn btn-small" rel="tooltip" data-placement="top" data-original-title="View"><i class="gicon-eye-open"></i></a> -->
-                   		<a class="btn btn-small"  href="#?cid=<?php echo $client_id ; ?>&price=<?php echo $view_in_arr['price']; ?>&indent_no=<?php echo $view_in_arr['indent_no']; ?>&date=<?php echo $view_in_arr['i_date1']; ?>" rel="tooltip" data-placement="top" data-original-title=" Print Purchase"><i class="gicon-print"></i></a>
+                   		<a class="btn btn-small"  href="print_purchase.php?bid=<?php echo $view_in_arr['b_id'] ; ?>&date=<?php echo $view_in_arr['date']; ?>&name=<?php echo $view_in_arr['market_name']; ?>" rel="tooltip" data-placement="top" data-original-title=" Print Purchase"><i class="gicon-print"></i></a>
                    		<a data-toggle="modal" href="<?php echo "#myModal".$view_in_arr['b_id'] . $view_in_arr['pu_date']; ?>" class="btn  btn-small" rel="tooltip" data-placement="top" data-original-title="View Purchase"><i class="gicon-eye-open"></i></a>
 						<!-- <a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Remove Indent" onclick="javascript:openDialog(<?php echo $view_in_arr['p_id']; ?>);"><i class="gicon-remove "></i></a> -->
 						 
