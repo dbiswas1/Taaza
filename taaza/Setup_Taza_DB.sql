@@ -94,7 +94,7 @@ create table bill_payment_master (bl_id int unsigned not null auto_increment, bi
 pay_b_no int unsigned default 0, primary key(bl_id), foreign key(bill_b_id) references biller(b_id) on delete cascade);
 
 -- Wastage History
-create table wastage_history (w_id int unsigned not null auto_increment,w_item_code int not null, qty double (9,2), date datetime default now(), primary key(w_id),  
+create table wastage_history (w_id int unsigned not null auto_increment,w_item_code int not null, qty double (9,2), price double(10,2),date datetime default now(), primary key(w_id),  
 foreign key(w_item_code) references item_master(item_code) on delete cascade );
 
 -- Expense table

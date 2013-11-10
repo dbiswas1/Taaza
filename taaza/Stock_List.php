@@ -43,10 +43,43 @@
 				$i=$s_indx['s_item_code'];
 					
 				$value=$_POST[$i];
-				mysql_query("update inventory set waste_stock=$value,primary_stock=primary_stock-$value where s_item_code=$i" );
-				if($value !=0 )
-					mysql_query("insert into wastage_history (w_item_code,qty) values ($i,$value)");
+				
+				$w_date_exist_query=mysql_query("select date_format(date,'%Y-%m-%d') as date from wastage_history where w_item_code=$i order by w_id desc limit 1");
+				$w_date_exist_arr=mysql_fetch_assoc($w_date_exist_query);
+				$w_date_exist=$w_date_exist_arr['date'];
+				$today_date= date('Y-m-d');
+				
+				$value_flag_query=mysql_query("select qty from wastage_history where date_format(date,'%Y-%m-%d')='$today_date' and w_item_code=$i"); 
+				$value_flag_arr=mysql_fetch_assoc($value_flag_query);
+				if (isset ($value_flag_arr['qty']) and $value == 0)
+				{
+					$value=$value_flag_arr['qty'];
 					
+				}	
+							
+						
+						
+				if($value !=0 )
+				{
+					$value=$_POST[$i];
+					if($today_date != $w_date_exist){
+							mysql_query("update inventory set waste_stock=$value,primary_stock=primary_stock-$value where s_item_code=$i" );
+							mysql_query("insert into wastage_history (w_item_code,qty,price) values ($i,$value,(select purchase from price_list where p_item_code=$i))");
+							//echo "new $today_date  and $w_date_exist";
+					}
+					else{
+							
+							$curr_wast_qty_query=mysql_query("select qty from wastage_history where date_format(date,'%Y-%m-%d') = '$today_date' and w_item_code=$i");
+							$curr_wast_qty_arr=mysql_fetch_assoc($curr_wast_qty_query);
+							$curr_wast_qty=$curr_wast_qty_arr['qty'];
+							$updated_qty=$value-$curr_wast_qty;
+							
+							//echo "update quantity $updated_qty";
+							mysql_query("update inventory set waste_stock=$value,primary_stock=primary_stock-$updated_qty where s_item_code=$i" );
+							mysql_query("update  wastage_history set w_item_code = $i ,qty = qty+$updated_qty,price= (select purchase from price_list where p_item_code=$i) where date_format(date,'%Y-%m-%d')='$today_date' and w_item_code=$i");
+							mysql_query("delete from wastage_history where qty =0 and w_id >0");
+					}
+				}	
 		
 			}
 				
