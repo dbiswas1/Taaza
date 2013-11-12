@@ -3,7 +3,7 @@
       <div class="top_right">
         <ul class="nav nav_menu">
           <li class="dropdown"> <a class="dropdown-toggle administrator" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
-            <div class="title"><span class="name">Taaza Tarkari</span><span class="subtitle">Agro Ltd</span></div>
+            <div class="title"><span class="name">Taaza Tarkari</span><span class="subtitle">Agro Pvt Ltd</span></div>
             <span class="icon"><img src="img/Logo1.jpg"></span></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
               <li><a href="#"><i class=" icon-user"></i> My Profile</a></li>

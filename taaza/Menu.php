@@ -212,10 +212,17 @@
             
           </ul>
         </li>
-        
-        <li class="accordion-group color_19"> <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse6"> <img src="img/menu_icons/statistics.png"><span>Reports</span></a>
-          <ul id="collapse6" class="accordion-body collapse">
-            <li><a href="#">Place Holder</a></li>
+         <?php if(isset($_GET['report']) ) { ?>
+        <li class="accordion-group color_19 active"> <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse8"> <img src="img/menu_icons/statistics.png"><span>Reports</span></a>
+          <ul id="collapse8" class="accordion-body collapse in">
+          <?php }else {?>
+          <li class="accordion-group color_19 "> <a class="accordion-toggle widgets collapsed" data-toggle="collapse" data-parent="#sidebar_menu" href="#collapse8"> <img src="img/menu_icons/statistics.png"><span>Reports</span></a>
+          <ul id="collapse8" class="accordion-body collapse">
+          <?php }if (isset($_GET['d_report'])) {?>
+            <li class="active"><a href="daily_report.php?report=active&d_report=active">Daily Report</a></li>
+             <?php }else {?>
+             <li><a href="daily_report.php?report=active&d_report=active">Daily Report</a></li>
+             <?php }?>
             <li><a href="#">Place Holder</a></li>
           </ul>
         </li>

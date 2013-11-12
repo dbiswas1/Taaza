@@ -29,7 +29,7 @@ if ($count_last_bill <= 1)
 		$last_bill = 0;
 
 $due_string="select pay_id,date_format(date,'%b-%d-%Y') as date, dues from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) order by pay_id desc limit 1";
-$last_pay_string="select pay_id,date_format(date,'%b-%d-%Y') as date, paid from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) and paid != 0 order by pay_id desc limit 1";
+$last_pay_string="select pay_id,date_format(date,'%b-%d-%Y') as date, paid from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) and paid != 0 order by date desc limit 1";
 
 
 $last_pay_query=mysql_query($last_pay_string);

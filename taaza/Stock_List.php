@@ -210,6 +210,7 @@
                 
             	<tbody>
             	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
+            		
                 	$result = mysql_query("select s.s_item_code, s.s_id ,i.item, s.primary_stock  from inventory s, item_master i where s.s_item_code=i.item_code limit $limit,3") or die(mysql_error());
                 	
                 ?>
@@ -343,8 +344,17 @@
                 
                 
             	<tbody>
-            	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
-                	$result = mysql_query("select s.s_item_code, s.s_id ,i.item, s.waste_stock  from inventory s, item_master i where s.s_item_code=i.item_code limit $limit,3") or die(mysql_error());
+            	<?php $today_date_waste= date('m-d-Y'); 
+            		//echo "$today_date_waste";
+            		$waste_reset_query=mysql_query("select count(*) as count from wastage_history where date_format(date,'%m-%d-%Y')='$today_date_waste'");
+            		$waste_reset_arr= mysql_fetch_assoc($waste_reset_query);
+            		if($waste_reset_arr['count'] ==0 ){
+            			mysql_query("update inventory set waste_stock=0 where s_id > 0");
+            		
+            		}
+            				
+            		for ($i=0 ; $i<$row_count ; $i++){ 
+                	$result = mysql_query("select s.s_item_code, s.s_id ,i.item, s.waste_stock  from inventory s, item_master i where  s.s_item_code=i.item_code limit $limit,3") or die(mysql_error());
                 	
                 ?>
                   <tr>
