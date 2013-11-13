@@ -449,7 +449,9 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         // Datepicker
         $('#datepicker1').datepicker({
           format: 'mm-dd-yyyy'
-        });
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });;
         $('#datepicker7').datepicker({
             format: 'mm-dd-yyyy'
           });

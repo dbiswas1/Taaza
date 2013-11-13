@@ -118,7 +118,7 @@
               </thead>
               <tbody>
               <?php 
-              	$result=mysql_query("select c.c_id,p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.dues from client c , payment_master p where c.c_id=p.pay_c_id and p.paid != 0");
+              	$result=mysql_query("select c.c_id,p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.dues from client c , payment_master p where c.c_id=p.pay_c_id and p.paid != 0 order by pay_id desc");
               	$sl_no=0;
               	while ($client_arr=mysql_fetch_array($result)){
               ?>
@@ -354,7 +354,7 @@
       } );
       $('#datatable_example').dataTable( {
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
-         "aaSorting": [[ 0, "desc" ]],
+         "aaSorting": [[ 0, "asc" ]],
         "bPaginate": true,
 
         "sPaginationType": "full_numbers",

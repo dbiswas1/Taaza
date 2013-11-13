@@ -118,13 +118,13 @@
               </thead>
               <tbody>
               <?php 
-              	$result=mysql_query("select b.b_id,p.bl_id,b.market_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_b_no,p.dues from biller b , bill_payment_master p where p.paid !=0 and b.b_id=p.bill_b_id");
+              	$result=mysql_query("select b.b_id,p.bl_id,b.market_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_b_no,p.dues from biller b , bill_payment_master p where p.paid !=0 and b.b_id=p.bill_b_id order by bl_id desc");
               	$sl_no=0;
               	while ($client_arr=mysql_fetch_array($result)){
               ?>
               
                 <tr>
-                  <td><?php echo $sl_no++ ; ?></td>
+                  <td><?php echo ++$sl_no ; ?></td>
                   <td><?php echo $client_arr['market_name'] ; ?></td>
                   <td class="to_hide_phone"><?php echo $client_arr['pay_date'] ; ?></td>
                   <td class="to_hide_phone"> <?php echo $client_arr['paid'] ; ?> </td>
@@ -354,7 +354,7 @@
       } );
       $('#datatable_example').dataTable( {
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
-         "aaSorting": [[ 0, "desc" ]],
+         "aaSorting": [[ 0, "asc" ]],
         "bPaginate": true,
 
         "sPaginationType": "full_numbers",

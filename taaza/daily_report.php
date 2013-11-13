@@ -146,6 +146,9 @@
        
        <div class="content">
        <?php 
+      			$date1=$date;
+      			$date1 = date("m-d-Y",strtotime("-1 day",strtotime($ddate)));
+      			//echo $date."-".$date1;
        			$total_pur_sum_query=mysql_query("select sum(p_price) as totalpurchase from purchase_order where date_format(p_date,'%m-%d-%Y')='$date'");
        			$tota_pur_sum_arr=mysql_fetch_array($total_pur_sum_query);
        			$total_pur_sum=$tota_pur_sum_arr['totalpurchase'];
@@ -428,7 +431,7 @@
     </div>
     
      
-    
+    <?php $conn->close(); ?>
 				
 				
 		  

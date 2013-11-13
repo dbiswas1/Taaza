@@ -168,9 +168,9 @@
                 </tr>
               </thead>
               <tbody>
-              
+              	
               <?php 
-              	$view_invoice_query=mysql_query("select inv.in_indent_no,c.c_id,inv.invoice_no,date_format(inv.in_date,'%b-%d-%Y') as in_date,c.shop_name,inv.amount from invoice inv, client c where inv.in_c_id=c.c_id");
+              	$view_invoice_query=mysql_query("select inv.in_indent_no,c.c_id,inv.invoice_no,date_format(inv.in_date,'%b-%d-%Y') as in_date,c.shop_name,inv.amount from invoice inv, client c where inv.in_c_id=c.c_id and in_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
               	while( $v_i_arr=mysql_fetch_array($view_invoice_query)){
               	
               	?>
@@ -188,9 +188,15 @@
                   		<!--  <a class="btn btn-small" rel="tooltip" data-placement="top" data-original-title="View Indent"><i class="gicon-eye-open"></i></a> -->
                    		<a data-toggle="modal" href="#myModal<?php echo $v_i_arr['invoice_no'];?>" class="btn  btn-small" rel="tooltip" data-placement="top" data-original-title="View Invoice"><i class="gicon-eye-open"></i></a>
 						
+						<?php $rm_date=date("M-d-Y");
+							if ($v_i_arr['in_date']==$rm_date){
+									
+						?>
+					
+						
 						<a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Remove Invoice" onclick="javascript:openDialog(<?php echo $v_i_arr['invoice_no'] ; ?>);"><i class="gicon-remove "></i></a>
 						 
-						
+						<?php }?>
 						
 						
                   	</div>
@@ -247,7 +253,7 @@
     </ul>
   </div>
            	<?php	
-				$invoice_row=mysql_query("select invoice_no from invoice");
+				$invoice_row=mysql_query("select invoice_no from invoice where in_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
 				while ($invoice_row_arr=mysql_fetch_array($invoice_row)){
 				$total=0;
 				$sl_no=1;
@@ -287,21 +293,14 @@
 								<td align="right"> <?php echo ($invoice_report_arr['in_h_price']*$invoice_report_arr['qty']); $total=($total)+($invoice_report_arr['in_h_price']*$invoice_report_arr['qty']) ;?>  </td>
 							</tr>
 						<?php }?>
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td><b>Sub Total</b></td>
-								<td align="right"><b><?php echo $total ; ?></b></td>
-								<?php $total=0; $sl_no=1; ?>
-							</tr>
+							
 							</tbody>
 						</table>	
 						
                 	  </div>
                 	  <div class="modal-footer">
-                  			<button class="btn" data-dismiss="modal">Close</button>
-                  			
+                  			<b>Sub Total : <?php echo $total ; ?></b>&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn" data-dismiss="modal">Close</button>
+                  		<?php $total=0; $sl_no=1; ?>	
                 	  </div>
               		</div>
               		<?php } $conn->close(); ?>
@@ -425,7 +424,7 @@ function formSubmit()
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
          "aaSorting": [[ 0, "desc" ]],
         "bPaginate": true,
-
+        "bStateSave": true,
         "sPaginationType": "full_numbers",
         "bJQueryUI": false,
         "aoColumns": dontSort,

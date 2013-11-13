@@ -50,9 +50,9 @@
 		 
 		
 		
-			$biil_cur_due_query=mysql_query("select dues from biller where b_id='$_POST[b_id]'");
+			$bill_cur_due_query=mysql_query("select dues from biller where b_id='$_POST[b_id]'");
 			$bill_cur_due_arr=mysql_fetch_assoc($bill_cur_due_query);
-			$bill_cur_due=$cur_due_arr['dues'];
+			$bill_cur_due=$bill_cur_due_arr['dues'];
 		
 		
 			mysql_query("insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[b_id]',0,$bill_cur_due,now())");
@@ -247,7 +247,7 @@
            <?php 
            
                 $sl=0;
-              	$view_in_result1=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id group by p.p_date, p.p_b_id ");
+              	$view_in_result1=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id and p_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY) group by p.p_date, p.p_b_id ");
               	while($view_in_arr=mysql_fetch_array($view_in_result1)){
               		
              
@@ -302,7 +302,7 @@
 		 
 		 <?php 
 		 	
-		 	$pop_pur_result=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id group by p.p_date, p.p_b_id");
+		 	$pop_pur_result=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id and p_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY) group by p.p_date, p.p_b_id");
 		 	while($pop_pur_arr= mysql_fetch_array($pop_pur_result)){
 		 	
 		 	
@@ -379,7 +379,7 @@
                 	  </div>
                 	  <div class="modal-footer">
                 	  		
-                  			Total=<?php echo $pop_pur_arr['amt'] ?>&nbsp;&nbsp;&nbsp;<button class="btn" data-dismiss="modal">Close</button>
+                  			<b>Total=<?php echo $pop_pur_arr['amt'] ?></b>&nbsp;&nbsp;&nbsp;<button class="btn" data-dismiss="modal">Close</button>
                   			
                 	  </div>
               		</div>
@@ -544,7 +544,7 @@ function formSubmit()
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
          "aaSorting": [[ 0, "desc" ]],
         "bPaginate": true,
-
+        "bStateSave": true,
         "sPaginationType": "full_numbers",
         "bJQueryUI": false,
         "aoColumns": dontSort,

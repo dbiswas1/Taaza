@@ -175,7 +175,7 @@
               </thead>
               <tbody>
            <?php 
-              	$view_in_result1=mysql_query("select price,indent_no,invoiced, i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent");
+              	$view_in_result1=mysql_query("select price,indent_no,invoiced, i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent where i_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
               	while($view_in_arr=mysql_fetch_array($view_in_result1)){
               		
               		
@@ -250,7 +250,7 @@
 		 
 		 <?php 
 		 	
-		 	$pop_ind_result=mysql_query("select indent_no,i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent");
+		 	$pop_ind_result=mysql_query("select indent_no,i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent where i_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
 		 	while($pop_ind_arr= mysql_fetch_array($pop_ind_result)){
 		 	
 		 	
@@ -490,7 +490,7 @@ function formSubmit()
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
          "aaSorting": [[ 0, "desc" ]],
         "bPaginate": true,
-
+        "bStateSave": true,
         "sPaginationType": "full_numbers",
         "bJQueryUI": false,
         "aoColumns": dontSort,
