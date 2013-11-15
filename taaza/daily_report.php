@@ -397,7 +397,13 @@
               </tr>
               <tr>
                 <td> Total Inventory Stock Amount   </td>
-                <td>  </td>
+                <td><?php 
+                	$total_inventory_query=mysql_query("select sum(i.primary_stock*p.purchase) as totalstock from sc_price_list_history p, sc_inventory_history i where date_format(i.date,'%m-%d-%Y')=date_format(p.date,'%m-%d-%Y') and p.p_item_code=i.s_item_code and date_format(i.date,'%m-%d-%Y')='$date' and primary_stock > 0 ");
+                	$total_inventory_arr=mysql_fetch_assoc($total_inventory_query);
+                	$total_inventory=$total_inventory_arr['totalstock'];
+                	echo number_format($total_inventory,2);
+                
+                ?>  </td>
                 
               </tr>
             
@@ -420,7 +426,7 @@
        
 		         
                   
-       <p align="center"> <button  type="submit" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
+       <p align="center"> <button  type="button" onclick="location.href='print_Daily_report.php?date=$date';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
         </div>
         <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
         </form>

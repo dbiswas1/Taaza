@@ -14,7 +14,7 @@ list($m,$d,$y)=split('-',$_GET['date']);
 $client_details=mysql_query("select dues,shop_name,client_name,ph_num from client where c_id='$_GET[cid]'");
 
 $client_arr=mysql_fetch_assoc($client_details);
-$invoice_report=mysql_query("select it.item,ino.qty,in_h_price from invoice_history ih, indent_order ino, item_master it where it.item_code=in_h_item_code and ih.in_h_item_code=ino.i_item_code and ih.in_h_indent_no=ino.i_indent_no and ih.in_h_invoice_no=$_GET[invoice_no]");
+$invoice_report=mysql_query("select it.item,ino.qty,in_h_price from invoice_history ih, indent_order ino, item_master it where it.item_code=in_h_item_code and ino.qty > 0 and ih.in_h_item_code=ino.i_item_code and ih.in_h_indent_no=ino.i_indent_no and ih.in_h_invoice_no=$_GET[invoice_no]");
 $last_bill_query=mysql_query("select  date_format(in_date,'%b-%d-%Y') as in_date,amount from invoice where in_c_id='$_GET[cid]' and invoice_no <= '$_GET[invoice_no]' order by invoice_no desc  limit 2");
 $last_bill=0;
 $last_bill_date=0;
