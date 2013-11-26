@@ -21,7 +21,7 @@
 		$cur_due_query=mysql_query("select paid from payment_master where pay_id='$_POST[pay_id]'");
 		$cur_diff_arr=mysql_fetch_assoc($cur_due_query);
 		$curr_diff= $cur_diff_arr['paid'] - $_POST['pay'] ;
-		$update_query = "update payment_master set pay_c_id=".$_POST['cl_id'].", paid=".$_POST['pay'].",date=STR_TO_DATE('".$_POST['date']."','%m-%d-%Y')".", pay_v_no=".$_POST['vouch'].", dues=dues+$curr_diff where pay_id=".$_POST['pay_id'];
+		$update_query = "update payment_master set pay_c_id=".$_POST['cl_id'].", paid=".$_POST['pay'].",date=STR_TO_DATE('".$_POST['date']."','%m-%d-%Y')".", pay_v_no=".$_POST['vouch'].", new_dues=new_dues+$curr_diff where pay_id=".$_POST['pay_id'];
 		//echo $update_query;
 		$client_id = $_POST['cl_id'];
 		
@@ -118,7 +118,7 @@
               </thead>
               <tbody>
               <?php 
-              	$result=mysql_query("select c.c_id,p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.dues from client c , payment_master p where c.c_id=p.pay_c_id and p.paid != 0 order by pay_id desc");
+              	$result=mysql_query("select c.c_id,p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.new_dues from client c , payment_master p where c.c_id=p.pay_c_id and p.paid != 0 order by pay_id desc");
               	$sl_no=0;
               	while ($client_arr=mysql_fetch_array($result)){
               ?>
@@ -128,7 +128,7 @@
                   <td><?php echo $client_arr['shop_name'] ; ?></td>
                   <td class="to_hide_phone"><?php echo $client_arr['pay_date'] ; ?></td>
                   <td class="to_hide_phone"> <?php echo $client_arr['paid'] ; ?> </td>
-                  <td class="to_hide_phone"><?php echo $client_arr['dues'] ; ?></td>
+                  <td class="to_hide_phone"><?php echo $client_arr['new_dues'] ; ?></td>
                   <td class="to_hide_phone"><?php echo $client_arr['pay_v_no'] ; ?></td>
                   <td class="ms">
                   	<div class="btn-group" id="<?php echo $client_arr['p_id'] ;?>"> 

@@ -20,7 +20,7 @@
 		$cur_due_query=mysql_query("select dues from client where c_id='$_POST[cl_id]'");
 		$cur_due_arr=mysql_fetch_assoc($cur_due_query);
 		$curr_due= $cur_due_arr['dues'] - $_POST['pay'] ;
-		$insert_query = "insert into payment_master (pay_c_id,paid,date,pay_v_no,dues) values  (". $_POST['cl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $curr_due.   ")";
+		$insert_query = "insert into payment_master (pay_c_id,paid,date,pay_v_no,dues,new_dues) values  (". $_POST['cl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $cur_due_arr['dues'].",".$curr_due.   ")";
 		//echo $insert_query;
 		$client_id = $_POST['cl_id'];
 		//$last_in_amt_query=mysql_query("select amount from invoice where in_c_id=$client_id order by in_date desc limit 1");

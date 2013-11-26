@@ -7,9 +7,9 @@
 	$conn->selectdb();
 
 	session_start();	
-	//$date = date('m-d-Y');
+	
 
-	if (  isset($_POST["pu_btn"]) || isset($_POST['pu_ed_btn']) || isset($_POST['indentkey']))
+	if (  isset($_POST["in_btn"]) || isset($_POST['in_ed_btn']) || isset($_POST['indentkey']))
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
@@ -17,144 +17,73 @@
 		$_SESSION["formid"] = '';
 		//echo '<pre>'; print_r($_POST); echo '</pre>';
 		
-		if(isset($_POST["pu_btn"])){
-		
+		if(isset($_POST["in_btn"])){
+		mysql_query("insert into indent (i_client_id,price,i_date,notes) values('$_POST[cl_id]','$_POST[price]', STR_TO_DATE('$_POST[idate]', '%m-%d-%Y'),'$_POST[notes]' )" );
+		$indent_no1=mysql_query("select indent_no from 	indent order by indent_no desc limit 1");
+		$indent_arr=mysql_fetch_assoc($indent_no1);
+		$indent_no=$indent_arr['indent_no'];
 		
 		$i_idx1=mysql_query("select item_code from item_master");
-		$total_amt=0;
+		
 		while($i_idx_arr=mysql_fetch_array($i_idx1))
 		{	
 			$i_idx = $i_idx_arr['item_code'];
-			$price_value="pr".$i_idx_arr['item_code'];
 			if (isset($_POST[$i_idx]) && $_POST[$i_idx] != 0)
 			{	
-				$str="insert into purchase_order (p_b_id,pu_item_code, p_qty,p_price,p_date) values (".$_POST['b_id'].",".$i_idx .",". $_POST[$i_idx].",".$_POST[$price_value] .","." STR_TO_DATE('".$_POST['idate'] ."', '%m-%d-%Y'))";
-				//echo $str;
-				
-				mysql_query($str);
-				mysql_query("update inventory set primary_stock=primary_stock+'$_POST[$i_idx]' where s_item_code=$i_idx");
-				
-				$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
-				
-				//echo $avg_string;
-				
-				$avg_price_query=mysql_query($avg_string);
-				$avg_price_arr=mysql_fetch_assoc($avg_price_query);
-				$avg_price=$avg_price_arr['avg_price'];
-				
-				mysql_query("update price_list set purchase=$avg_price where p_item_code=$i_idx");
-				$total_amt=$total_amt+$_POST[$price_value];
-				
+				mysql_query("insert into indent_order (i_indent_no,i_item_code, qty) values ('$indent_no','$i_idx', '$_POST[$i_idx]' )");
+				mysql_query("update inventory set primary_stock=primary_stock-'$_POST[$i_idx]' where s_item_code=$i_idx");
 			}
 		}
-		 
 		
-		
-			$bill_cur_due_query=mysql_query("select dues from biller where b_id='$_POST[b_id]'");
-			$bill_cur_due_arr=mysql_fetch_assoc($bill_cur_due_query);
-			$bill_cur_due=$bill_cur_due_arr['dues'];
-		
-		
-			mysql_query("insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[b_id]',0,$bill_cur_due,now())");
-			mysql_query("update biller set dues = dues + $total_amt where b_id = '$_POST[b_id]'"); 
 		}
 		
-		if(isset($_POST['pu_ed_btn']))
+		if(isset($_POST['in_ed_btn']))
 		{
-			
-			$due_str="select sum(p_price) as amt from  purchase_order  where  p_b_id=".$_POST['biller_id']." and p_date=STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') group by p_date, p_b_id";
-			$old_due_query=mysql_query("$due_str");
-			$old_due_arr=mysql_fetch_assoc($old_due_query);
-			$old_due=$old_due_arr['amt'];
 			$i_idx1=mysql_query("select item_code from item_master");
-			//echo "i am in edit";
 			//echo "<pre>"; print_r($_POST) ;  echo "</pre>";
-			$total_amt=0;
 			while($i_idx_arr=mysql_fetch_array($i_idx1))
 			{
 				$i_idx = $i_idx_arr['item_code'];
-				$count_str="select count(*) as c from purchase_order where p_date=STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and p_b_id=".$_POST['biller_id']." and pu_item_code=".$i_idx ; 
-				$in_up1=mysql_query($count_str);
+				$in_up1=mysql_query("select count(*) as c from indent_order where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'");
 				$in_up_arr=mysql_fetch_assoc($in_up1);
 				$in_up=$in_up_arr['c'];
-				if (isset($_POST[$i_idx]) && $in_up != 0)
+				if (isset($_POST[$i_idx])  && $in_up != 0)
 				{
-					//echo "I am in in 1";
-					$qty_str="select p_qty from purchase_order where p_date=STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and p_b_id=".$_POST['biller_id']." and pu_item_code=$i_idx";
-					//echo $qty_str;
-					$current_qty1=mysql_query($qty_str);
+			
+					$current_qty1=mysql_query("select qty from indent_order where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'");
 					$current_qty_arr=mysql_fetch_assoc($current_qty1);
-					$current_qty=$current_qty_arr['p_qty'];
-					//echo "Curr_value".$current_qty."<br>"."Updated Qty".$_POST[$i_idx];
-					$updated_qty=$current_qty-$_POST[$i_idx];
-					$pr_idx="pr".$i_idx;
+					$current_qty=$current_qty_arr['qty'];
+					$updated_qty=$_POST[$i_idx]-$current_qty;
+			
 					mysql_query("update inventory set primary_stock=primary_stock-$updated_qty where s_item_code=$i_idx");
-					
-					$update_purchase_string="update purchase_order set p_qty=".$_POST[$i_idx]." , p_price=".$_POST[$pr_idx]. ",p_date=STR_TO_DATE('".$_POST['idate'] ."','%m-%d-%Y') where p_date=STR_TO_DATE('".$_POST['pur_date']."','%m-%d-%Y') and p_b_id=".$_POST['biller_id']." and pu_item_code=$i_idx" ;
-					//echo $update_purchase_string."<br>";
-					mysql_query($update_purchase_string);
-					
-					$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
-					
-					//echo $avg_string;
-					
-					$avg_price_query=mysql_query($avg_string);
-					$avg_price_arr=mysql_fetch_assoc($avg_price_query);
-					$avg_price=$avg_price_arr['avg_price'];
-					
-					mysql_query("update price_list set purchase=$avg_price where p_item_code=$i_idx");
-					//$total_amt=$total_amt+$_POST[$pr_idx];
-					
+					mysql_query("update indent_order set qty='$_POST[$i_idx]' where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'" );
 					
 				}
-				if (isset($_POST[$i_idx])  && $in_up == 0)
+				if (isset($_POST[$i_idx]) && $_POST[$i_idx] != 0 && $in_up == 0)
 				{
-					$pr_idx="pr".$i_idx;
-					$str="insert into purchase_order (p_b_id,pu_item_code, p_qty,p_price,p_date) values (".$_POST['biller_id'].",".$i_idx .",". $_POST[$i_idx].",".$_POST[$pr_idx] .","." STR_TO_DATE('".$_POST['idate'] ."', '%m-%d-%Y'))";
-				//echo "i am in second";
-				
-					mysql_query($str);
+					mysql_query("insert into indent_order (i_indent_no,i_item_code, qty) values ('$_POST[indent_no_gen]','$i_idx', '$_POST[$i_idx]' )");
 					
-					$update_inventory_string="update inventory set primary_stock=primary_stock+".$_POST[$i_idx]." where s_item_code=$i_idx";
-					//echo $update_inventory_string;
-					mysql_query("update inventory set primary_stock=primary_stock+ $_POST[$i_idx] where s_item_code=$i_idx");
-					
-					$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
-					
-					//echo $avg_string;
-				
-					$avg_price_query=mysql_query($avg_string);
-					$avg_price_arr=mysql_fetch_assoc($avg_price_query);
-					$avg_price=$avg_price_arr['avg_price'];
-					
-					$update_price_string="update price_list set purchase=$avg_price where p_item_code=$i_idx";
-					//echo $update_price_string;
-				
-					mysql_query("update price_list set purchase=$avg_price where p_item_code=$i_idx");
-					//$total_amt=$total_amt+$_POST[$pr_idx];
+					mysql_query("update inventory set primary_stock=primary_stock-'$_POST[$i_idx]' where s_item_code=$i_idx");
 				}
 		
 		
 			}
+			mysql_query("update indent set price='$_POST[price]' ,notes='$_POST[notes]', i_date=STR_TO_DATE('$_POST[idate]','%m-%d-%Y') where indent_no= '$_POST[indent_no_gen]'");
 			
-			
-			
-			//echo $due_str;
-			$due_str1="select sum(p_price) as amt from  purchase_order  where  p_b_id=".$_POST['biller_id']." and p_date=STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') group by p_date, p_b_id";
-			$cur_due_query=mysql_query($due_str1);
-			$cur_due_arr=mysql_fetch_assoc($cur_due_query);
-			$cur_due=$cur_due_arr['amt'];
-			$cur_due= $cur_due-$old_due;
-			//echo "old AMt".$old_due ."Diff".$cur_due;
-			mysql_query("update biller set dues = dues + $cur_due where b_id = '$_POST[biller_id]'");
-			mysql_query("insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[biller_id]',0,(select dues from biller where b_id='$_POST[biller_id]'),STR_TO_DATE('$_POST[idate]','%m-%d-%Y'))");
+			//echo $_POST["price"];
 			
 		}
 		
 		if(isset($_POST['indentkey']))
 		{
-			//mysql_query("delete from indent_order where i_indent_no='$_POST[indentkey]'") ;
-			//mysql_query("delete from indent where indent_no='$_POST[indentkey]'") ;
+			$del_qty_query=mysql_query("select qty,i_item_code from indent_order where i_indent_no='$_POST[indentkey]'" );
+			while($del_qty_arr=mysql_fetch_array($del_qty_query)){
+				mysql_query("update inventory set primary_stock=primary_stock +'$del_qty_arr[qty]' where s_item_code='$del_qty_arr[i_item_code]'");
+				
+			}
+			mysql_query("delete from indent_order where i_indent_no='$_POST[indentkey]'") ;
+			mysql_query("delete from indent where indent_no='$_POST[indentkey]'") ;
+			
 				
 			
 		}
@@ -179,7 +108,7 @@
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari - View Purchase</title>
+<title>Taaza Tarkari - View Indents</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -223,9 +152,9 @@
 		<!-- End Top Right -->
     <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_13">
+        <div class="box color_25">
           <div class="title">
-            <h4> <span>Purchase table <small>(Sorted in descending order)</small> </span> </h4>
+            <h4> <span>Indents table <small>(Sorted in descending order)</small> </span> </h4>
           </div>
           <!-- End .title -->
           
@@ -236,44 +165,62 @@
             <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
               <thead>
                 <tr>
-                  <th class="">SL #</th>
-                  <th class="">Market Name</th>
-                  <th class="">Amount</th>
-                  <th class="">Date</th>
-                 
+                  <th class="">Indent #</th>
+                  <th class="no_sort">Date</th>
+                  <th class="">Shop Name</th>
+                  <th class="">Invoiced</th>
+                  <th class="no_sort">Notes</th>
                   <th class="ms no_sort">Actions</th>
                 </tr>
               </thead>
               <tbody>
            <?php 
-           
-                $sl=0;
-              	$view_in_result1=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id and p_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY) group by p.p_date, p.p_b_id ");
+              	$view_in_result1=mysql_query("select price,indent_no,invoiced, i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent where i_date < DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
               	while($view_in_arr=mysql_fetch_array($view_in_result1)){
               		
-             
+              		
+                $client_id=$view_in_arr['i_client_id'];
+                
+              	
+              	$shop_name1=mysql_query("select shop_name from client where c_id='$client_id'");
+              	$shop_name_arr=mysql_fetch_assoc($shop_name1);
+              	$shop_name=$shop_name_arr['shop_name'];	
               	
               	
               ?> 
                 <tr>
-                  <td class="to_hide_phone"><?php echo $sl++ ; ?>
-                  <td class="to_hide_phone"><?php echo $view_in_arr['market_name']; ?></td>
-                  <td class=""><?php echo $view_in_arr['amt']; ?></td>
-                  <td class=""><?php echo $view_in_arr['date']; ?></td>
-                                  
-             
+                  <td class="to_hide_phone"><?php echo $view_in_arr['indent_no']; ?></td>
+                  <td class=""><?php echo $view_in_arr['i_date1']; ?></td>
+                  <td class=""><?php echo $shop_name ; ?></td>
+                  <?php if ($view_in_arr['invoiced'] == 0){ ?>
+                  		<td class="to_hide_phone"><strong> NO </strong></td>
+                  <?php } else { ?>
+                  		<td class="to_hide_phone"><strong> YES </strong></td>
+                  <?php } ?>
+                  <td class="to_hide_phone"><?php echo $view_in_arr['notes']; ?></td>
+                  
+              <?php if ($view_in_arr['invoiced'] == 0){ ?>
                   <td class="ms">
                   	<div class="btn-group"> 
-                  		<a class="btn btn-small"  href="edit_purchase.php?purchase=active&v_purchase=active&pu_date=<?php echo $view_in_arr['pu_date'];?>&gen_b_name=<?php echo $view_in_arr['market_name']; ?> &gen_b_id=<?php echo $view_in_arr['b_id']; ?>" rel="tooltip" data-placement="top" data-original-title=" Edit Purchase "><i class="gicon-edit"></i></a> 
+                  		<a class="btn btn-small"  href="edit_indent.php?indent=active&in_indent=in&v_indent=active&gn_in_i_no=<?php echo $view_in_arr['indent_no'];?>&gen_c_name=<?php echo $shop_name ; ?>&gen_c_id=<?php echo $client_id ;?>" rel="tooltip" data-placement="top" data-original-title=" Edit Indent "><i class="gicon-edit"></i></a> 
                   		<!--  <a class="btn btn-small" rel="tooltip" data-placement="top" data-original-title="View"><i class="gicon-eye-open"></i></a> -->
-                   		<a class="btn btn-small"  href="print_purchase.php?bid=<?php echo $view_in_arr['b_id'] ; ?>&date=<?php echo $view_in_arr['date']; ?>&name=<?php echo $view_in_arr['market_name']; ?>" rel="tooltip" data-placement="top" data-original-title=" Print Purchase"><i class="gicon-print"></i></a>
-                   		<a data-toggle="modal" href="<?php echo "#myModal".$view_in_arr['b_id'] . $view_in_arr['pu_date']; ?>" class="btn  btn-small" rel="tooltip" data-placement="top" data-original-title="View Purchase"><i class="gicon-eye-open"></i></a>
-						<!-- <a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Remove Indent" onclick="javascript:openDialog(<?php echo $view_in_arr['p_id']; ?>);"><i class="gicon-remove "></i></a> -->
+                   		<a class="btn btn-small"  href="print_indent.php?cid=<?php echo $client_id ; ?>&price=<?php echo $view_in_arr['price']; ?>&indent_no=<?php echo $view_in_arr['indent_no']; ?>&date=<?php echo $view_in_arr['i_date1']; ?>" rel="tooltip" data-placement="top" data-original-title=" Print Indent"><i class="gicon-print"></i></a>
+                   		<a data-toggle="modal" href="<?php echo "#myModal".$view_in_arr['indent_no']; ?>" class="btn  btn-small" rel="tooltip" data-placement="top" data-original-title="View Indent"><i class="gicon-eye-open"></i></a>
+						<a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Remove Indent" onclick="javascript:openDialog(<?php echo $view_in_arr['indent_no']; ?>);"><i class="gicon-remove "></i></a>
 						 
                   	</div>
                   		
                   </td>
-                 
+                  <?php } else { ?>
+                       <td class="ms">
+                  	<div class="btn-group"> 
+                  		<a class="btn btn-small"  href="#" rel="tooltip" data-placement="top" data-original-title=" Cannot Edit Already Invoiced"><i class="gicon-edit"></i></a> 
+                  		
+                   		<a data-toggle="modal" href="<?php echo "#myModal".$view_in_arr['indent_no']; ?>" class="btn  btn-small" rel="tooltip" data-placement="top" data-original-title="View Indent"><i class="gicon-eye-open"></i></a>
+						<a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Cannot Remove Indent Altready Invoiced"><i class="gicon-remove "></i></a> 
+                  	</div>
+                  </td>
+                  <?php } ?>
                   
                 </tr>
                 
@@ -303,33 +250,34 @@
 		 
 		 <?php 
 		 	
-		 	$pop_pur_result=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id and p_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY) group by p.p_date, p.p_b_id");
-		 	while($pop_pur_arr= mysql_fetch_array($pop_pur_result)){
+		 	$pop_ind_result=mysql_query("select indent_no,i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent where i_date < DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
+		 	while($pop_ind_arr= mysql_fetch_array($pop_ind_result)){
 		 	
 		 	
-		 		$biller_name=$pop_pur_arr['market_name'];
+		 		$client_id=$pop_ind_arr['i_client_id'];
 		 	
 		 		 
-		 	
+		 		$shop_name1=mysql_query("select shop_name from client where c_id='$client_id'");
+		 		$shop_name_arr=mysql_fetch_assoc($shop_name1);
+		 		$shop_name=$shop_name_arr['shop_name']; 
 		 		
-		 		
-		 		$count_str="select count(*) as c from purchase_order where p_b_id=".$pop_pur_arr['b_id']." and p_date=STR_TO_DATE('".$pop_pur_arr['pu_date']." ','%m-%d-%Y')";
-		 		$count1=mysql_query($count_str);
+		 		$indent_no=$pop_ind_arr['indent_no'];
+		 		$count1=mysql_query("select count(*) as c from indent_order ind,item_master i where ind.i_item_code=i.item_code and i_indent_no=$indent_no");
 		 		$count2=mysql_fetch_assoc($count1);
 		 		$count=$count2['c'];
 		 		 
 		 
 		 ?>
 		 
-		<div id="myModal<?php echo $pop_pur_arr['b_id'] . $pop_pur_arr['pu_date']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="myModal<?php echo $pop_ind_arr['indent_no']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 	  <div class="modal-header">
                   	  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                   	  	<h1 id="myModalLabel">
                   	  	<table>
                   	  	<tr>
-                  	  		<td>Shop Name: <?php echo" ".$biller_name ; ?></td> 
+                  	  		<td>Shop Name: <?php echo" ".$shop_name ; ?></td> 
                   	  		<td>Total Items=<?php echo $count;?> </td> 
-                  	  		<td>Date:<?php echo " ".$pop_pur_arr['pu_date'];?></td>   
+                  	  		<td>Date:<?php echo " ".$pop_ind_arr['i_date1'];?></td>   
                   	  	</tr>
                   	  	</table>
                   	  	</h1>
@@ -339,12 +287,12 @@
                   			<table class="table table-condensed table-striped">
            					 <thead>
              				 	<tr>
-                				<th> Item</th>
-                				<th> Qty </th>
-                				<th> Price</th>
-                				<th> Item</th>
-                				<th> Qty </th>
-                				<th> Price</th>
+                				<th> # </th>
+                				<th> Item </th>
+                				<th> Qty</th>
+                				<th> # </th>
+                				<th> Item </th>
+                				<th> Qty</th>
               					</tr>
            					 </thead>
             				 <tbody>
@@ -356,9 +304,7 @@
             				 	$limit=0;
             				 	$rowcount=ceil($count/2);
             				 	for($i=0; $i<$rowcount; $i++){
-            				 	
-            				 		$modal_string="select i.item,p.p_qty,p.p_price from item_master i , purchase_order p where p.pu_item_code=i.item_code and p.p_date = STR_TO_DATE('".$pop_pur_arr['pu_date']."','%m-%d-%Y') and p.p_b_id=".$pop_pur_arr['b_id']." limit $limit,2"; 
-            				 		$i_ord1=mysql_query($modal_string);
+            				 	$i_ord1=mysql_query("select ind.i_id,i.item,ind.qty from indent_order ind,item_master i where ind.i_item_code=i.item_code and i_indent_no=$indent_no limit $limit,2");
             				 	
             				 		
             				 	
@@ -366,9 +312,9 @@
             				 ?>
               				  <tr>
               				  <?php while($i_ord_arr=mysql_fetch_array($i_ord1)){ ?>
+                				<td> <?php echo $i_ord_arr['i_id']; ?> </td>
                 				<td> <?php echo $i_ord_arr['item']; ?> </td>
-                				<td> <?php echo $i_ord_arr['p_qty']; ?> </td>
-                				<td> <?php echo $i_ord_arr['p_price']; ?></td>
+                				<td> <?php echo $i_ord_arr['qty']; ?></td>
                 				
                 				<?php } $limit=$limit+2; ?>
               				</tr>
@@ -379,8 +325,7 @@
           				</table>
                 	  </div>
                 	  <div class="modal-footer">
-                	  		
-                  			<b>Total=<?php echo $pop_pur_arr['amt'] ?></b>&nbsp;&nbsp;&nbsp;<button class="btn" data-dismiss="modal">Close</button>
+                  			<button class="btn" data-dismiss="modal">Close</button>
                   			
                 	  </div>
               		</div>

@@ -6,20 +6,37 @@
 	$conn=new createConnection();
 	$conn->connect();
 	$conn->selectdb();
-	
-	$biller_list_query=mysql_query("select b_id,market_name from biller where b_id != '$_GET[gen_b_id]'");
-	
-	
 
 	session_start();	
 	
+	$pay_arr_query=mysql_query("select p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.dues,p.new_dues from client c , payment_master p where p.pay_id='$_GET[pid]' and c.c_id=p.pay_c_id ");
+	$pay_arr=mysql_fetch_assoc($pay_arr_query);
+	
 
-	if (  isset($_POST["in_ed_btn"]) )
+	if (  isset($_POST['pday_btn']) )
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
 	{
 		$_SESSION["formid"] = '';
+		//echo '<pre>'; print_r($_POST); echo '</pre>';
+		$cur_due_query=mysql_query("select dues from client where c_id='$_POST[cl_id]'");
+		$cur_due_arr=mysql_fetch_assoc($cur_due_query);
+		$curr_due= $cur_due_arr['dues'] - $_POST['pay'] ;
+		$insert_query = "insert into payment_master (pay_c_id,paid,date,pay_v_no,dues) values  (". $_POST['cl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $curr_due.   ")";
+		//echo $insert_query;
+		$client_id = $_POST['cl_id'];
+		$last_in_amt_query=mysql_query("select amount from invoice where in_c_id=$client_id order by in_date desc limit 1");
+		$last_in_amt_arr=mysql_fetch_assoc($last_in_amt_query);
+		$last_in_amt=$last_in_amt_arr['amount'];
+		$pay=$_POST['pay'];
+		
+		//echo "update client set dues=(($last_in_amt+dues)-$pay) where c_id=$client_id";
+		
+		mysql_query($insert_query);
+		mysql_query("update client set dues=(dues-$pay) where c_id=$client_id");
+		
+		
 		
 	}
 	else
@@ -33,12 +50,11 @@
 	
 ?>
 
-
 <!DOCTYPE html>
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari- Edit Purchase</title>
+<title>Taaza Tarkari - Edit Payment </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -66,175 +82,129 @@
     </li>
   </ul>
 </div>
-<?php include 'Menu.php' ; ?>
-<!-- End sidebar_box --> 
+	<!-- Responsive part -->
+
+		<?php include 'Menu.php' ; ?>
+      <!-- End sidebar_box --> 
       
     </div>
   </div>
 </div>
-<div id="main">
+<div id="main" style="min-height:1000px">
   <div class="container">
 		<?php include 'top.php' ; ?>
 		<!-- End Top Right -->
-   
-   
-    <?php 
-   
-   
-		$item_count1 = mysql_query('select count(*) as c from item_master');
-		$item_count2 = mysql_fetch_assoc($item_count1);
-		$item_count=0;
-		$item_count=$item_count2['c'];
-		
-		$row_count=ceil($item_count/2);
-		$limit=0;
-		
-		//$date_query = mysql_query("select date_format(p_date,'%m-%d-%Y') as date from purchase_order where p_id='$_GET[pu_id]'"); 
-		//$date_arr=mysql_fetch_assoc($date_query);
-		$date=$_GET['pu_date'];
-		
-    ?>
-   
+    
+
+    
     <div id="main_container">
       <div class="row-fluid">
-        <div class="span12">
-        <form action="view_purchase.php?purchase=active&in_purchase=in&v_purchase=active" method="post">
-        
-        
-          <div class="box paint color_13">
-            <div class="title">
-              <h4> <i class="icon-book"></i><span>Edit Purchase </span> </h4>
-              <div class="span4">
-              <select name="cl_id"  class="chzn-select">
-              
-                     <!--   <option   value=""></option> -->
+        <div class="box color_24">
+          <div class="title">
+            <h4> <span>Edit  Payment </span> </h4>
+          </div>
+          <!-- End .title -->
+          
+          <div class="content top">
+          <form  name="pay_form" action="payment_transaction.php?client=active&t_pay_client=active"  onsubmit="return validate();" method="post">
+          
+          		<fieldset>
+                        <div class="form-row control-group row-fluid">
+                          <label class="control-label span2">Chosse a Client</label>
+                          <div class="controls span9">
+                            <select name="cl_id"  class="chzn-select">
+                              <option value="<?php echo $_GET['cid']; ?>" selected><?php echo $_GET['shop_name']; ?></option>
+                             <?php 
+                             	//$client_array=mysql_query("select c_id, shop_name from client where c_id != '$_GET[cid]'");
+                             	//while ($cl_arr = mysql_fetch_array($client_array)) {?>
+                              
+                            <!--    <option value="<?php // echo $cl_arr['c_id']; ?>"><?php //echo $cl_arr['shop_name']; ?></option> -->
+                              <?php //}  ?>
+                              
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div class="form-row control-group row-fluid">
+                          <label class="control-label span2">Select Date</label>
+                          <div class="controls span9">
+                          	<?php $date = $pay_arr['pay_date']; ?>
+                            <input type="text" id="datepicker1"  name="date" value="<?php echo $date ;?>" 	class="row-fluid">
+                          </div>
+                        </div>
+                        
+                        <div class="control-group row-fluid"> 
+                          <!-- Password -->
+                          <label class="control-label span2"  for="name">Voucher no</label>
+                          <div class="controls span9">
+                            <input type="text"  name="vouch" value="<?php echo $pay_arr['pay_v_no']; ?>" placeholder="<?php echo $pay_arr['pay_v_no']; ?>" class="row-fluid"  onfocus="this.value='';"  onblur="extractNumber(this,0,false);" onkeyup="extractNumber(this,0,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
+                          </div>
+                        </div>
+                        
+                       <div class="control-group row-fluid"> 
+                          <!-- Password -->
+                          <label class="control-label span2"  for="name">Paid Amount</label>
+                          <div class="controls span9">
+                            <input type="text"  name="pay" value="<?php echo $pay_arr['paid']; ?>" placeholder="<?php echo $pay_arr['paid']; ?>" class="row-fluid" onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
+                          </div>
+                        </div>
+                  		
+                  		<div class="control-group row-fluid"> 
+                  			<label class="control-label span2"  for="name">Old Dues</label>
+                  			 <div class="controls span9">
+                  			<input type="text"  name="old_due" value="<?php echo $pay_arr['dues']; ?>" placeholder="<?php echo $pay_arr['dues']; ?>" class="row-fluid" onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
+                  			</div>
+                  		</div>
+                  		<div class="control-group row-fluid"> 
+                  			<label class="control-label span2"  for="name">New Dues</label>
+                  			 <div class="controls span9">
+                  			<input type="text"  name="new_due" value="<?php echo $pay_arr['new_dues']; ?>" placeholder="<?php echo $pay_arr['new_dues']; ?>" class="row-fluid" onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
+                  			</div>
+                  		</div>
+                       
+                     
+                      </fieldset>
                       
-                      <option value="<?php echo $_GET['gen_b_id']; ?>" selected><?php echo $_GET['gen_b_name']; ?></option>
-                      <?php //while ($biller_list_arr=mysql_fetch_array($biller_list_query)) {?>
-                      	<!--  <option value="<?php //echo $biller_list_arr['b_id']; ?>" ><?php //echo $biller_list_arr['market_name']; ?> </option> -->
-                      <?php //}?>
-                   
-               </select>
-               </div>
-               
-					
-                    <div class="controls span4">
-                    <input name="idate" type="text" id="datepicker1" value="<?php echo $date ;?>" class="row-fluid">
-                  </div>               
-   
-             </div>
-            
-            <div class="content top ">
-              <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
-                <thead>
-                  <tr>
-                    
-                    <th class="no_sort"> Item </th>
-                    <th class="no_sort"> Qty </th>
-                    <th class="no_sort"> Price</th>
-                    
-                    <th class="no_sort"> Item </th>
-                    <th class="no_sort"> Qty </th>
-                     <th class="no_sort"> Price</th>
-                   
-                  </tr>
-                </thead>
-            	<tbody>
-            		<?php  for ($i=0 ; $i<$row_count ; $i++){ 
-                	$result = mysql_query("SELECT * from item_master limit $limit,2") or die(mysql_error());
-                	
-                ?>
-                  <tr>
-                  	 <?php 
-                  	while($item_arr = mysql_fetch_array( $result ))
-                  		{
-                  ?>
-                    	<td><?php echo $item_arr['item'] ; ?></td>
-                    	<?php 
-                    	
-              			$str="select p_qty,p_price from purchase_order where p_b_id=".$_GET['gen_b_id']." and p_date=STR_TO_DATE('".$date."','%m-%d-%Y') and pu_item_code=".$item_arr['item_code']; 
-              			//echo $str;     	
-                    		$in_order_result=mysql_query($str);
-                    		$in_order_arr=mysql_fetch_assoc($in_order_result);
-                    		if(isset($in_order_arr['p_qty'])){
-
-                    	?>
-                    	<td class="to_hide_phone"> <input name="<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" value="<?php echo $in_order_arr['p_qty'] ; ?>" placeholder="<?php echo $in_order_arr['p_qty'] ; ?>"  onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<td class="to_hide_phone"> <input name="pr<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" value="<?php echo $in_order_arr['p_price'] ; ?>" placeholder="<?php echo $in_order_arr['p_price'] ; ?>" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<?php } else { ?>
-                    	<td class="to_hide_phone"> <input name="<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" placeholder="0" onfocus="this.value='';" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<td class="to_hide_phone"> <input name="pr<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" placeholder="0" onfocus="this.value='';" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	
-                   <?php }}
-                   $limit=$limit+2; ?>
-                  </tr>
-                 	<?php } ?>
-                  </tbody>
-              </table>
-            
-            
-             
-               <div class="accordion" id="accordion3">
-                <div class="accordion-group">
-                  <div class="accordion-heading"> <a class="accordion-toggle collapsed" data-toggle="collapse"  href="#collapseOne1"> Click to Add Notes </a> </div>
-                  <div id="collapseOne1" class="accordion-body collapse" style="height: 0px; ">
-                  
-                  <?php 
-                  	
-                  	$conn->close();
-                  
-                  ?>
-                    <div class="accordion-inner"><textarea id="text" name="notes" rows="3" class="row-fluid"></textarea></div>
+                   <div class="description content">
+                    <ul class="pager wizard mb5">
+                      <li class="previous ">
+                        <button class="btn btn-primary pull-left btn-large"><i class="icon-caret-left"></i> Cancel</button>
+                      </li>
+                      <li class="next">
+                        <button class="btn btn-primary btn-large pull-right" name="pay_ed_btn" type="submit" value="pressed">Make Payment <i class="icon-caret-right"></i></button>
+                      </li>
+                      
+                    </ul>
                   </div>
-                </div>
-               
-                
-              </div>
-         
-            
-          
-          
-          
-          <!-- End .box -->
-			
-          <!-- End .box -->
-          
-          
-          
-         
-           
+          		
+  <?php $conn->close(); ?>
+            <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
+            <input type="hidden" name="pay_id" value="<?php echo $pay_arr['pay_id'] ;?>" />
+            </form>
+          </div>
+          <!-- End .content --> 
         </div>
-        
-        <!-- End Content -->
-       
-		         
-                  
-       <p align="center"> <button  type="submit" name="pu_ed_btn" value="inden" class="btn btn-primary"> Save Changes</button> </p>
-       <p align="center"> <button   name="c_btn" value="cancel" class="btn btn-primary" onclick="location.href='view_purchase.php?purchase=active&in_purchase=in&v_purchase=active'" > cancel</button> </p>
-        </div>
-        <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
-        <input type="hidden" name="pur_date" value="<?php echo $date; ?>" />
-        <input type="hidden" name="biller_id" value="<?php echo $_GET['gen_b_id']; ?>" />
-        
-        
-        </form>
-        <!-- End Box --> 
-        	 
+        <!-- End box --> 
       </div>
-      <!-- End span12 -->
+      <!-- End .row-fluid --> 
+      
     </div>
+  
+    	
     
-     
     
-				
-				
-		  
-            
-   
-  </div> <!-- End #container -->
-   		<?php include 'foot.php' ; ?>
+    <!-- End #container --> 
+  </div>
+  
+
+  
+  
+  
+  
+  
+  
+    		<?php include 'foot.php' ; ?>
 		 <!-- End Footer -->
-		
 <div class="background_changer dropdown">
   <div class="dropdown" id="colors_pallete"> <a data-toggle="dropdown" data-target="drop4" class="change_color"></a>
     <ul  class="dropdown-menu pull-left" role="menu" aria-labelledby="drop4">
@@ -266,10 +236,24 @@
       <li><a data-color="color_25" class="color_25" tabindex="-1">25</a></li>
     </ul>
   </div>
+        
+  
 </div>
 <!-- End .background_changer -->
-</div>
 <!-- /container --> 
+<div class="avgrund-popup  stack modal" id="default-popup" >
+  <div class="modal-header">
+    <h3 id="myModalLabel">Confirm</h3>
+  </div>
+  <div class="modal-body">
+    <p> Do you want to Delte the Client </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="javascript:formSubmit();">Delete</button>
+    <button class="btn btn-primary" onclick="javascript:closeDialog();">Close</button>
+  </div>
+</div>
+<div class="avgrund-cover"></div>
 
 <!-- Le javascript
     ================================================== --> 
@@ -277,7 +261,7 @@
 <script src="js/jquery.js" type="text/javascript"> </script> 
 <!--[if !IE]> -->
 <script src="js/plugins/enquire.min.js" type="text/javascript"></script> 
-<!-- <![endif]-->
+<!-- <![endif]--> 
 <script language="javascript" type="text/javascript" src="js/plugins/jquery.sparkline.min.js"></script> 
 <script src="js/plugins/excanvas.compiled.js" type="text/javascript"></script> 
 <script src="js/bootstrap-transition.js" type="text/javascript"></script> 
@@ -311,10 +295,36 @@
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-datepicker.js"></script> 
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-colorpicker.js"></script> 
 
+<!-- Forms Wizard --> 
+<script language="javascript" type="text/javascript" src="js/plugins/wizard-master/jquery.bootstrap.wizard.js"></script> 
+
 <!-- Custom made scripts for this template --> 
 <script src="js/scripts.js" type="text/javascript"></script> 
 <script type="text/javascript">
+  /**** Specific JS for this page ****/
 
+function validate()
+{
+
+	y=document.forms["pay_form"]["pay"].value;
+	x=document.forms["pay_form"]["cl_id"].value
+	z=document.forms["pay_form"]["vouch"].value
+	if (x == "" || y == "" || x == null || y == null || y == "0.00" || z == "" || z == "0.00" || z == null || z == 0 ) {
+	
+		alert ('Client Name, Voucher Number and Amount are mandatory');
+		return false;
+	}
+	
+	else{
+		document.indentform.submit();
+		return true;
+	}
+		
+   
+} 
+  
+
+  
 function extractNumber(obj, decimalPlaces, allowNegative)
 {
 	var temp = obj.value;
@@ -392,17 +402,19 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
 	return isFirstN || isFirstD || reg.test(keychar);
 }
   
-                   
+  
+  
+  
+  
+  
 
-
-   /**** Specific JS for this page ****/
  $(document).ready(function () {
        
         $('textarea.autogrow').autogrow();
         var elem = $("#chars");
-        $("#text").limiter(100, elem);
+        // $("#text").limiter(100, elem);
         // Mask plugin http://digitalbush.com/projects/masked-input-plugin/
-        $("#mask-phone").mask("(999) 999-9999");
+        $("#mask-phone").mask("999-999-9999");
         $("#mask-date").mask("99-99-9999");
         $("#mask-int-phone").mask("+33 999 999 999");
         $("#mask-tax-id").mask("99-9999999");
@@ -420,21 +432,41 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         $('#datepicker1').datepicker({
           format: 'mm-dd-yyyy'
         }).on('changeDate', function (ev) {
-        	
-            $(this).datepicker('hide');
-            
-            
-        });;
-        $('#datepicker7').datepicker({
-            format: 'mm-dd-yyyy'
-          });
+            $(this).datepicker('hide')});;
         $('#datepicker2').datepicker();
         $('.colorpicker').colorpicker()
         $('#colorpicker3').colorpicker();
     });
 
-
+    $(document).ready(function() {
+      $('#rootwizard').bootstrapWizard({onTabShow: function(tab, navigation, index) {
+      var $total = navigation.find('li').length;
+      var $current = index+1;
+      var $percent = ($current/$total) * 100;
+      $('#rootwizard').find('.bar').css({width:$percent+'%'});
+      
+      // If it's the last tab then hide the last button and show the finish instead
+      if($current >= $total) {
+        $('#rootwizard').find('.pager .next').hide();
+        $('#rootwizard').find('.pager .finish').show();
+        $('#rootwizard').find('.pager .finish').removeClass('disabled');
+      } else {
+        $('#rootwizard').find('.pager .next').show();
+        $('#rootwizard').find('.pager .finish').hide();
+      }
+      
+    }});
+    // $('#rootwizard .finish').click(function() {
+    //   alert('Finished! Starting over!');
+    //   $('#rootwizard').find("a[href*='tab1']").trigger('click');
+    // }); 
+   
+  }); 
 
 </script>
+
+
+
+
 </body>
 </html>

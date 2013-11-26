@@ -84,7 +84,7 @@
 		
 		$row_count=ceil($item_count/3);
 		$limit=0;
-		$client_array=mysql_query("select c_id, shop_name from client ");
+		$client_array=mysql_query("select c_id, shop_name from client where status=1");
 		$date = date('m-d-Y'); 
 		
     ?>

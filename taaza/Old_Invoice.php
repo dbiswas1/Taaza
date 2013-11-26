@@ -35,8 +35,8 @@
 				$cur_due_query=mysql_query("select dues from client where c_id='$indent_arr1[in_c_id]'");
 				$cur_due_arr=mysql_fetch_assoc($cur_due_query);
 				$cur_due=$cur_due_arr['dues'];
-				
 				mysql_query("delete from payment_master where invoice_no='$_POST[del_invoice]'");
+				
 			}
 			
 			if(isset($_POST["in_ed_btn"]))
@@ -170,7 +170,7 @@
               <tbody>
               	
               <?php 
-              	$view_invoice_query=mysql_query("select inv.in_indent_no,c.c_id,inv.invoice_no,date_format(inv.in_date,'%b-%d-%Y') as in_date,c.shop_name,inv.amount from invoice inv, client c where inv.in_c_id=c.c_id and in_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
+              	$view_invoice_query=mysql_query("select inv.in_indent_no,c.c_id,inv.invoice_no,date_format(inv.in_date,'%b-%d-%Y') as in_date,c.shop_name,inv.amount from invoice inv, client c where inv.in_c_id=c.c_id and in_date < DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
               	while( $v_i_arr=mysql_fetch_array($view_invoice_query)){
               	
               	?>
@@ -253,7 +253,7 @@
     </ul>
   </div>
            	<?php	
-				$invoice_row=mysql_query("select invoice_no from invoice where in_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
+				$invoice_row=mysql_query("select invoice_no from invoice where in_date < DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
 				while ($invoice_row_arr=mysql_fetch_array($invoice_row)){
 				$total=0;
 				$sl_no=1;

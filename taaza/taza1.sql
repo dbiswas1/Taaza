@@ -217,7 +217,19 @@ create table expense (ep_id int unsigned not null auto_increment, notes varchar(
 ep_date datetime not null default now(),primary key(ep_id), foreign key(ep_eid) references employee(eid), foreign key(ep_ex_id) references expense_list(ex_id) 
 on delete cascade);
 
-SHOW PROCESSLIST;
+desc payment_master;
+
+alter table payment_master add column (new_dues double(11,2) default 0,invoice_no  int(255) unsigned not null default 0);
+
+select * from payment_master order by pay_id desc;
+
+select * from indent_order;
+
+select * from item_master ;
+
+select * from invoice_history where date_format(in_date,'%d-%m-%Y')='25-11-2013';
+
+select im.item,sum(io.qty)as qty from item_master im,indent_order io , invoice_history ih where im.item_code=io.i_item_code and ih.in_h_item_code=io.i_item_code and io.i_indent_no=ih.in_h_indent_no and  date_format(ih.in_date,'%d-%m-%Y')='10-11-2013'  group by io.i_item_code;
 
 
 

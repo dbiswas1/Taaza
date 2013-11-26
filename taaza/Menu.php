@@ -46,8 +46,15 @@
             <li class="active"><a href="List_Item.php?indent=active&in_indent=in&l_indent=active">List Items</a></li>
 		  <?php } else { ?>
 			<li><a href="List_Item.php?indent=active&in_indent=in&l_indent=active">List Items</a></li>
-		  <?php } ?>
-            <li><a href="#">Old Indents</a></li>
+		  <?php } if (isset($_GET['t_indent']) ) { ?>
+            <li class="active"><a href="Total_Indent.php?indent=active&in_indent=in&t_indent=active">Total Indent</a></li>
+		  <?php } else { ?>
+			<li><a href="Total_Indent.php?indent=active&in_indent=in&t_indent=active">Total Indent</a></li>
+		  <?php } if (isset($_GET['o_indent']) ) { ?>
+            <li class="active"><a href="Old_Indent.php?indent=active&in_indent=in&o_indent=active">Old Indent</a></li>
+		  <?php } else { ?>
+			<li><a href="Old_Indent.php?indent=active&in_indent=in&o_indent=active">Old Indent</a></li> 
+           <?php }?>
           </ul>
         </li>
 		
@@ -70,10 +77,10 @@
             <li class="active"><a href="view_invoice.php?invoice=active&in_invoice=in&v_invoice=active">View Invoice</a></li>
 		<?php } else { ?>
 			<li><a href="view_invoice.php?invoice=active&in_invoice=in&v_invoice=active">View Invoice</a></li>
-		<?php } if (isset($_GET['p_invoice']) ) { ?>
-            <li class="active"><a href="#?invoice=active&in_invoice=in&p_invoice=active">Old Invoices</a></li>
+		<?php } if (isset($_GET['o_invoice']) ) { ?>
+            <li class="active"><a href="old_invoice.php?invoice=active&in_invoice=in&o_invoice=active">Old Invoices</a></li>
 		<?php } else { ?>
-			<li><a href="#?invoice=active&in_invoice=in&p_invoice=active">Old Invoices</a></li>
+			<li><a a href="old_invoice.php?invoice=active&in_invoice=in&o_invoice=active">Old Invoices</a></li>
 		<?php } if (isset($_GET['s_invoice']) ) { ?>
 			<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab1=pr1">Selling Price List</a></li>
 		<?php } else { ?>
@@ -184,6 +191,10 @@
             <li class="active"><a href="View_Payment.php?client=active&v_pay_client=active">View Payments</a></li>
             <?php }else{ ?>
             <li><a href="View_Payment.php?client=active&v_pay_client=active">View Payments</a></li>
+         	<?php } if (isset($_GET['t_pay_client']) ) {?>
+            <li class="active"><a href="Payment_Transaction.php?client=active&t_pay_client=active">Client Transactions</a></li>
+            <?php }else{ ?>
+            <li><a href="Payment_Transaction.php?client=active&t_pay_client=active">Client Transactions</a></li>
             <?php }?>
             
             

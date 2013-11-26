@@ -313,13 +313,13 @@
                 		$p_due_total=0;
                 		$p_biller_query=mysql_query("select b_id,market_name,dues from biller");
                 		while ($p_biller_arr=mysql_fetch_array($p_biller_query)){
-                			$p_due_query=mysql_query("select bill_b_id,paid,dues,date from bill_payment_master where bill_b_id='$p_biller_arr[b_id]' and date=STR_TO_DATE('$date','%m-%d-%Y') order by bl_id desc limit 1");
+                			$p_due_query=mysql_query("select bill_b_id,paid,dues,date from bill_payment_master where bill_b_id='$p_biller_arr[b_id]' and date_format(date,'%m-%d-%Y')='$date' order by bl_id desc limit 1");
                 			$p_due_arr=mysql_fetch_assoc($p_due_query);
                 			if(isset($p_due_arr['dues'])){
                 				$p_due_total+=$p_due_arr['dues'];
                 			}
                 			else{
-                				$p_dues_not_found_query=mysql_query("select dues from bill_payment_master where bill_b_id='$p_biller_arr[b_id]' and date<=STR_TO_DATE('$date','%m-%d-%Y') order by bl_id desc limit 1");
+                				$p_dues_not_found_query=mysql_query("select dues from bill_payment_master where bill_b_id='$p_biller_arr[b_id]' and date_format(date,'%m-%d-%Y')<='$date' order by date desc limit 1");
                 				$p_dues_not_found_arr=mysql_fetch_assoc($p_dues_not_found_query);
                 				if(isset($p_dues_not_found_arr['dues'])){
                 					$p_due_total+=$p_dues_not_found_arr['dues'];
@@ -426,7 +426,7 @@
        
 		         
                   
-       <p align="center"> <button  type="button" onclick="location.href='print_Daily_report.php?date=$date';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
+       <p align="center"> <button  type="button" onclick="location.href='print_Daily_report.php?date=<?php echo $date ;?>';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
         </div>
         <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
         </form>

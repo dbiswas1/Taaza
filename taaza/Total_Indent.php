@@ -6,15 +6,11 @@
 	$conn=new createConnection();
 	$conn->connect();
 	$conn->selectdb();
-	
-	$biller_list_query=mysql_query("select b_id,market_name from biller where b_id != '$_GET[gen_b_id]'");
-	
-	
 
 	session_start();	
 	
 
-	if (  isset($_POST["in_ed_btn"]) )
+	if (  isset($_POST["in_btn"]) )
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
@@ -38,7 +34,7 @@
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari- Edit Purchase</title>
+<title>Taaza Tarkari- Indent Report</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -80,124 +76,87 @@
    
     <?php 
    
-   
+   		
+		$date = date('m-d-Y'); 
+		$ddate=date('M-d-Y');
+		
+		if(isset($_POST['idate']))
+		{
+			 $date=$_POST['idate'];
+			 $ddate=str_replace("-", "/", $_POST['idate']);
+		
+			 
+		}
+		
+	
+		 
+		 
 		$item_count1 = mysql_query('select count(*) as c from item_master');
 		$item_count2 = mysql_fetch_assoc($item_count1);
 		$item_count=0;
 		$item_count=$item_count2['c'];
 		
-		$row_count=ceil($item_count/2);
+		$row_count=ceil($item_count/3);
 		$limit=0;
-		
-		//$date_query = mysql_query("select date_format(p_date,'%m-%d-%Y') as date from purchase_order where p_id='$_GET[pu_id]'"); 
-		//$date_arr=mysql_fetch_assoc($date_query);
-		$date=$_GET['pu_date'];
+	
 		
     ?>
    
     <div id="main_container">
       <div class="row-fluid">
         <div class="span12">
-        <form action="view_purchase.php?purchase=active&in_purchase=in&v_purchase=active" method="post">
-        
-        
-          <div class="box paint color_13">
+        <form name="date_form" action="Total_Indent.php?indent=active&in_indent=in&t_indent=active"  method="post">
+          <div class="box paint color_25">
             <div class="title">
-              <h4> <i class="icon-book"></i><span>Edit Purchase </span> </h4>
-              <div class="span4">
-              <select name="cl_id"  class="chzn-select">
-              
-                     <!--   <option   value=""></option> -->
-                      
-                      <option value="<?php echo $_GET['gen_b_id']; ?>" selected><?php echo $_GET['gen_b_name']; ?></option>
-                      <?php //while ($biller_list_arr=mysql_fetch_array($biller_list_query)) {?>
-                      	<!--  <option value="<?php //echo $biller_list_arr['b_id']; ?>" ><?php //echo $biller_list_arr['market_name']; ?> </option> -->
-                      <?php //}?>
-                   
-               </select>
-               </div>
+              <h4> <i class="icon-book"></i><span>Total Indent Report (<?php echo date('M-d-Y', strtotime($ddate));?>)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Change Date: <input align="right" class="span2" name="idate" type="text" id="datepicker1" value="<?php echo $date ;?>" class="row-fluid"></span> </h4>
+            	
+			              
                
-					
-                    <div class="controls span4">
-                    <input name="idate" type="text" id="datepicker1" value="<?php echo $date ;?>" class="row-fluid">
-                  </div>               
-   
              </div>
-            
-            <div class="content top ">
+             <div class="content top ">
               <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
                 <thead>
+                
                   <tr>
-                    
-                    <th class="no_sort"> Item </th>
+                    <th class="no_sort"> Item</th>
                     <th class="no_sort"> Qty </th>
-                    <th class="no_sort"> Price</th>
-                    
-                    <th class="no_sort"> Item </th>
+                    <th class="no_sort"> Item</th>
                     <th class="no_sort"> Qty </th>
-                     <th class="no_sort"> Price</th>
-                   
-                  </tr>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+				   </tr>
                 </thead>
+                         
             	<tbody>
-            		<?php  for ($i=0 ; $i<$row_count ; $i++){ 
-                	$result = mysql_query("SELECT * from item_master limit $limit,2") or die(mysql_error());
-                	
+            	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
+                	 $result = mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io , invoice_history ih where im.item_code=io.i_item_code and ih.in_h_item_code=io.i_item_code and io.i_indent_no=ih.in_h_indent_no and  date_format(ih.in_date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
+                	//$result = mysql_query("select item,item_code as qty from item_master limit $limit,3");
                 ?>
                   <tr>
-                  	 <?php 
+                  <?php 
                   	while($item_arr = mysql_fetch_array( $result ))
                   		{
+                  			
                   ?>
-                    	<td><?php echo $item_arr['item'] ; ?></td>
-                    	<?php 
-                    	
-              			$str="select p_qty,p_price from purchase_order where p_b_id=".$_GET['gen_b_id']." and p_date=STR_TO_DATE('".$date."','%m-%d-%Y') and pu_item_code=".$item_arr['item_code']; 
-              			//echo $str;     	
-                    		$in_order_result=mysql_query($str);
-                    		$in_order_arr=mysql_fetch_assoc($in_order_result);
-                    		if(isset($in_order_arr['p_qty'])){
-
-                    	?>
-                    	<td class="to_hide_phone"> <input name="<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" value="<?php echo $in_order_arr['p_qty'] ; ?>" placeholder="<?php echo $in_order_arr['p_qty'] ; ?>"  onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<td class="to_hide_phone"> <input name="pr<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" value="<?php echo $in_order_arr['p_price'] ; ?>" placeholder="<?php echo $in_order_arr['p_price'] ; ?>" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<?php } else { ?>
-                    	<td class="to_hide_phone"> <input name="<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" placeholder="0" onfocus="this.value='';" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	<td class="to_hide_phone"> <input name="pr<?php echo $item_arr['item_code'] ; ?>" class="row-fluid span4" type="text" placeholder="0" onfocus="this.value='';" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
-                    	
-                   <?php }}
-                   $limit=$limit+2; ?>
+                    		
+                    		<td><?php echo $item_arr['item'] ;?></td>
+                    		
+                    
+                    		<td><?php echo $item_arr['qty'] ;?></td>
+                    		
+                    
+                   <?php }
+                   $limit=$limit+3; ?>
+                    
                   </tr>
-                 	<?php } ?>
+                  <?php }$conn->close(); ?>
+                  
                   </tbody>
               </table>
             
             
-             
-               <div class="accordion" id="accordion3">
-                <div class="accordion-group">
-                  <div class="accordion-heading"> <a class="accordion-toggle collapsed" data-toggle="collapse"  href="#collapseOne1"> Click to Add Notes </a> </div>
-                  <div id="collapseOne1" class="accordion-body collapse" style="height: 0px; ">
-                  
-                  <?php 
-                  	
-                  	$conn->close();
-                  
-                  ?>
-                    <div class="accordion-inner"><textarea id="text" name="notes" rows="3" class="row-fluid"></textarea></div>
-                  </div>
-                </div>
-               
-                
-              </div>
          
-            
-          
-          
-          
-          <!-- End .box -->
-			
-          <!-- End .box -->
+
           
           
           
@@ -205,18 +164,22 @@
            
         </div>
         
+        
+                <div class="accordion" id="accordion3">
+                <div class="accordion-group">
+                  <div id="collapseOne1" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner"><textarea id="text" name="notes" rows="3" class="row-fluid"></textarea></div>
+                  </div>
+                </div>
+          
+        </div>
         <!-- End Content -->
        
 		         
                   
-       <p align="center"> <button  type="submit" name="pu_ed_btn" value="inden" class="btn btn-primary"> Save Changes</button> </p>
-       <p align="center"> <button   name="c_btn" value="cancel" class="btn btn-primary" onclick="location.href='view_purchase.php?purchase=active&in_purchase=in&v_purchase=active'" > cancel</button> </p>
+       <p align="center"> <button  type="button" onclick="location.href='print_Indent_report.php?date1=<?php echo date('M-d-Y', strtotime($ddate));?>&date=<?php echo $date ;?>';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
         </div>
         <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
-        <input type="hidden" name="pur_date" value="<?php echo $date; ?>" />
-        <input type="hidden" name="biller_id" value="<?php echo $_GET['gen_b_id']; ?>" />
-        
-        
         </form>
         <!-- End Box --> 
         	 
@@ -314,6 +277,24 @@
 <!-- Custom made scripts for this template --> 
 <script src="js/scripts.js" type="text/javascript"></script> 
 <script type="text/javascript">
+  /**** Specific JS for this page ****/
+  
+  
+function validate(x)
+{
+	if (!x == '') {
+		document.indentform.submit();
+		return true;
+	}
+	else{
+		alert ('Select a Client');
+		return false;
+	}
+		
+   
+} 
+
+
 
 function extractNumber(obj, decimalPlaces, allowNegative)
 {
@@ -392,10 +373,12 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
 	return isFirstN || isFirstD || reg.test(keychar);
 }
   
-                   
-
-
-   /**** Specific JS for this page ****/
+  
+  
+  
+  
+  
+  
  $(document).ready(function () {
        
         $('textarea.autogrow').autogrow();
@@ -422,12 +405,14 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         }).on('changeDate', function (ev) {
         	
             $(this).datepicker('hide');
-            
+            document.date_form.submit();
             
         });;
         $('#datepicker7').datepicker({
             format: 'mm-dd-yyyy'
-          });
+          }).on('changeDate', function (ev) {
+              $(this).datepicker('hide');
+          });;
         $('#datepicker2').datepicker();
         $('.colorpicker').colorpicker()
         $('#colorpicker3').colorpicker();

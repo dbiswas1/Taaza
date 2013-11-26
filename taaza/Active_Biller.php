@@ -18,7 +18,8 @@
 		$_SESSION["formid"] = '';
 		if (  isset($_POST["Editbiller"]))
 			mysql_query("update biller set market_name='$_POST[E_market_name]',biller_name='$_POST[E_biller_name]', ph_num='$_POST[E_ph_no]', address='$_POST[E_ad_txt]',dues='$_POST[E_dues]'  where b_id='$_POST[b_id]' ") ;
-			
+			mysql_query("insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[b_id]',0,(select dues from biller where b_id='$_POST[b_id]' ),now())");
+			//echo "insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[b_id]',0,(select dues from biller where b_id='$_POST[b_id]' ),now())";			
 		if (  isset($_POST["billerkey"]))
 			
 			mysql_query("update biller set status=0 where b_id='$_POST[billerkey]'");

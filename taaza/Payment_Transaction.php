@@ -10,7 +10,7 @@
 	session_start();	
 	
 
-	if (  isset($_POST["ex_edit_btn"]) || isset($_POST["expensekey"]) )
+	if (  isset($_POST["pay_ed_btn"]) )
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
@@ -18,13 +18,19 @@
 		$_SESSION["formid"] = '';
 		//echo '<pre>'; print_r($_POST); echo '</pre>';
 		
-		if (  isset($_POST["ex_edit_btn"])){
-			mysql_query("update expense set exp_ex_id='$_POST[ex_id]',exp_emp_id='$_POST[em_id]',exp_date=STR_TO_DATE('$_POST[date]', '%m-%d-%Y'),rec_no='$_POST[vouch]',ex_amount='$_POST[pay]' where exp_id='$_POST[exp_id]'");
-		}
-		if (isset($_POST["expensekey"]) ){
-			mysql_query("delete from expense where exp_id='$_POST[expensekey]'");
-			
-		}
+		$cur_due_query=mysql_query("select paid from payment_master where pay_id='$_POST[pay_id]'");
+		$cur_diff_arr=mysql_fetch_assoc($cur_due_query);
+		$curr_diff= $cur_diff_arr['paid'] - $_POST['pay'] ;
+		$update_query = "update payment_master set pay_c_id=".$_POST['cl_id'].", paid=".$_POST['pay'].",date=STR_TO_DATE('".$_POST['date']."','%m-%d-%Y')".", pay_v_no=".$_POST['vouch'].", new_dues=".$_POST['new_due'].",dues=".$_POST['old_due']." where pay_id=".$_POST['pay_id'];
+		//echo $update_query;
+		$client_id = $_POST['cl_id'];
+		
+		
+		
+		
+		mysql_query($update_query);
+		mysql_query("update client set dues=(dues+$curr_diff) where c_id=$client_id");
+		
 		
 		
 	}
@@ -43,7 +49,7 @@
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari - View Expense</title>
+<title>Taaza Tarkari - View Transactions</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -90,47 +96,55 @@
     	
     	    <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_5">
+        <div class="box color_24">
           <div class="title">
-            <h4> <span>Expense Summary table <small>(Sorted in descending order)</small> </span> </h4>
+            <h4> <span>Transaction table <small>(Sorted in descending order)</small> </span> </h4>
           </div>
           <!-- End .title -->
           
           <div class="content top">
-          <form id="del_form" action="View_Expense.php?expense=active&v_expense=active" method="post">
+          <form id="del_form" action="Active_Client.php?client=active&dp_client=active" method="post">
             <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
               <thead>
                 <tr>
                   <th class="">SL#</th>
-                  <th class="">Expense Type</th>
-                  <th class="">Person Name</th>
-                  <th class="">Date</th>
-                  <th class="">Reciept No</th>
-                  <th class="">Amount</th>
+                  <th class="">Shop Name</th>
+                  <th class="">Date Of Payment</th>
+                  
+                  <th class="">Old Dues</th>
+                  <th class="">Bill</th>
+                  <th class="">Paid</th>
+                  <th class="">New Dues</th>
+                  <th class="">Voucher No</th>
                   <th class="ms no_sort ">Actions</th>
                 </tr>
               </thead>
               <tbody>
               <?php 
-              	$result=mysql_query("select exp.exp_id,ex.ex_type,em.emp_name,date_format(exp.exp_date,'%b-%d-%Y') as exp_date ,exp.rec_no,exp.ex_amount from expense_type ex, employee em,expense exp where exp.exp_ex_id=ex.ex_id and em.emp_id=exp.exp_emp_id order by exp.exp_date desc");
+              	$result=mysql_query("select c.c_id,p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.new_dues,p.dues from client c , payment_master p where c.c_id=p.pay_c_id  order by pay_id desc");
               	$sl_no=0;
-              	while ($expense_arr=mysql_fetch_array($result)){
+              	while ($client_arr=mysql_fetch_array($result)){
               ?>
               
                 <tr>
                   <td><?php echo $sl_no++ ; ?></td>
-                  <td><?php echo $expense_arr['ex_type'] ; ?></td>
-                  <td class="to_hide_phone"><?php echo $expense_arr['emp_name'] ; ?></td>
-                  <td class="to_hide_phone"> <?php echo $expense_arr['exp_date'] ; ?> </td>
-                  <td class="to_hide_phone"><?php echo $expense_arr['rec_no'] ; ?></td>
-                  <td align="right" class="to_hide_phone"><?php echo $expense_arr['ex_amount'] ; ?></td>
+                  <td><?php echo $client_arr['shop_name'] ; ?></td>
+                  <td class="to_hide_phone"><?php echo $client_arr['pay_date'] ; ?></td>
+                  <td class="to_hide_phone"> <?php echo $client_arr['dues'] ; ?> </td>
+                  <?php if (($client_arr['new_dues']-$client_arr['dues']) > 0){ ?>
+                   <td class="to_hide_phone"> <?php echo $client_arr['new_dues']-$client_arr['dues'] ; ?> </td>
+                   <?php } else { ?>
+                    <td class="to_hide_phone"> 0 </td>
+                    <?php } ?>
+                   <td class="to_hide_phone"> <?php echo $client_arr['paid'] ; ?> </td>
+                  <td class="to_hide_phone"><?php echo $client_arr['new_dues'] ; ?></td>
+                  <td class="to_hide_phone"><?php echo $client_arr['pay_v_no'] ; ?></td>
                   <td class="ms">
-                  	<div class="btn-group" id="<?php echo $expense_arr['exp_id'] ;?>"> 
-                  		<a class="btn btn-small" href="Edit_Expense.php?expense=active&v_expense=active&exid=<?php echo $expense_arr['exp_id'] ;?>" rel="tooltip" data-placement="top" data-original-title=" Edit " ><i class="gicon-edit"></i></a> 		
-						<a class="btn  btn-small"  id="remrow" rel="tooltip" data-placement="top" data-original-title="Remove Expense" onclick="javascript:openDialog(<?php echo $expense_arr['exp_id'] ;?>);"><i class="gicon-remove "></i></a>
+                  	<div class="btn-group" id="<?php echo $client_arr['p_id'] ;?>"> 
+                  		<a class="btn btn-small" href="Edit_transaction.php?client=active&t_pay_client=active&shop_name=<?php echo $client_arr['shop_name'] ; ?>&cid=<?php echo $client_arr['c_id'] ;?>&pid=<?php echo $client_arr['pay_id'] ;?>" rel="tooltip" data-placement="top" data-original-title=" Edit " ><i class="gicon-edit"></i></a> 		
 						 
 						
-						<input type="hidden" name="act" value="<?php echo $expense_arr['exp_id'] ;?>" />
+						<input type="hidden" name="act" value="<?php echo $client_arr['pay_id'] ;?>" />
 						
                   	</div>
                   </td>
@@ -167,7 +181,7 @@
                 	  <div class="modal-header">
                 	  
                   	  	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                  	  	<h1 id="myModalLabel">Edit Expense  </h1>
+                  	  	<h1 id="myModalLabel">Edit Client  </h1>
                 	  </div>
                 	  <div class="modal-body">
                   			
@@ -238,7 +252,7 @@
     <h3 id="myModalLabel">Confirm</h3>
   </div>
   <div class="modal-body">
-    <p> Do you want to Delte the Expense </p>
+    <p> Do you want to Delte the Client </p>
   </div>
   <div class="modal-footer">
     <button class="btn btn-primary" onclick="javascript:formSubmit();">Delete</button>
@@ -306,10 +320,10 @@
       		
       	var form = document.createElement("form");
           form.setAttribute("method", "POST");
-          form.setAttribute("action", "View_Expense.php?expense=active&v_expense=active");
+          form.setAttribute("action", "Active_Client.php?client=active&ac_client=active");
           var hiddenField = document.createElement("input");
           hiddenField.setAttribute("type", "hidden");
-          hiddenField.setAttribute("name", "expensekey");
+          hiddenField.setAttribute("name", "clientkey");
           hiddenField.setAttribute("value", global_client);
           form.appendChild(hiddenField);
 

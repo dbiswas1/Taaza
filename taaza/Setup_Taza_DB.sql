@@ -77,7 +77,7 @@ foreign key(in_h_indent_no) references indent(indent_no) on delete cascade);
 
 -- Create a Payment Table
 create table payment_master (pay_id int unsigned not null auto_increment, pay_c_id int not null, paid double(11,2) default 0, dues double(11,2) default 0,date datetime not null,
-pay_v_no int unsigned default 0 , primary key(pay_id), foreign key(pay_c_id) references client(c_id) on delete cascade);
+pay_v_no int unsigned default 0 , new_dues double(11,2) default 0,invoice_no  int(255) unsigned not null default 0, primary key(pay_id), foreign key(pay_c_id) references client(c_id) on delete cascade);
 
 
 

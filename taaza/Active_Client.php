@@ -158,7 +158,7 @@
           <!-- End .title -->
           
           <div class="content top">
-          <form id="del_form" action="Active_Client.php?client=active&dp_client=active" method="post">
+         <!--  <form id="del_form" action="Active_Client.php?client=active&dp_client=active" method="post"> --> 
             <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
               <thead>
                 <tr>
@@ -188,8 +188,40 @@
                   	<div class="btn-group" id="<?php echo $client_arr['c_id'] ;?>"> 
                   		<a class="btn btn-small" href="Edit_Client.php?client=active&ac_client=active&cid=<?php echo $client_arr['c_id'] ;?>" rel="tooltip" data-placement="top" data-original-title=" Edit " ><i class="gicon-edit"></i></a> 		
 						 
-						<button class="btn btn-success" rel="tooltip" data-placement="top" data-original-title=".btn .success" onclick="javascript:formSubmit();">Activate</button>
-						<input type="hidden" name="act" value="<?php echo $client_arr['c_id'] ;?>" />
+						<button class="btn btn-success" rel="tooltip" data-placement="top" data-original-title="restore" onclick="javascript:formSubmit1(<?php echo $client_arr['c_id'] ;?>);">Activate</button>
+						 <script type="text/javascript" >
+
+ function formSubmit1(x)
+ {
+
+	  //global_client=x;
+ 	//alert(global_client);
+
+
+ 		
+ 	var form = document.createElement("form");
+     form.setAttribute("method", "POST");
+     form.setAttribute("action", "Active_Client.php?client=active&dp_client=active");
+     var hiddenField = document.createElement("input");
+     hiddenField.setAttribute("type", "hidden");
+     hiddenField.setAttribute("name", "act");
+     hiddenField.setAttribute("value", x);
+     form.appendChild(hiddenField);
+
+     var hiddenField = document.createElement("input");
+     hiddenField.setAttribute("type", "hidden");
+     hiddenField.setAttribute("name", "formid");
+     hiddenField.setAttribute("value", "<?php echo $_SESSION["formid"]; ?>");
+     form.appendChild(hiddenField);
+
+    
+  
+     
+     document.body.appendChild(form);
+ 	form.submit();
+ }
+
+ </script>   
 						
                   	</div>
                   </td>
@@ -204,7 +236,7 @@
                </tbody>
             </table>
             <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
-            </form>
+          <!--    </form> -->
           </div>
           <!-- End .content --> 
         </div>
@@ -343,6 +375,10 @@
 <!-- Data tables plugin --> 
 <script type="text/javascript" language="javascript" src="js/plugins/datatables/js/jquery.dataTables.js"></script> 
 
+
+
+
+
 <!-- Custom made scripts for this template --> 
 <script src="js/scripts.js" type="text/javascript"></script>
 
@@ -359,6 +395,7 @@
       function formSubmit()
       {
 
+    	  //global_client=x;
       	//alert(global_client);
 
 
@@ -384,10 +421,12 @@
           document.body.appendChild(form);
       	form.submit();
       }
+
+
  </script> 
 
 
-    
+
     
     
     

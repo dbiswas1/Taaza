@@ -75,7 +75,7 @@
 			$cur_due=$cur_due_arr['dues'];
 				
 				
-			mysql_query("insert into payment_master (pay_c_id,paid,dues,date) values ('$client_due_arr[in_c_id]',0,$cur_due+$amt,STR_TO_DATE('$indent_date','%d-%m-%Y'))");
+			mysql_query("insert into payment_master (invoice_no,new_dues,pay_c_id,paid,dues,date) values ($q_invoice_no,$cur_due+$amt,'$client_due_arr[in_c_id]',0,$cur_due,STR_TO_DATE('$indent_date','%d-%m-%Y'))");
 			
 			
 			mysql_query("update client set dues=($amt+dues) where c_id='$client_due_arr[in_c_id]'");
