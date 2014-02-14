@@ -1,1 +1,0 @@
-formSubmit(<?php echo $invoice_arr['indent_no']; ?>,<?php echo $invoice_arr['i_client_id']; ?>,price_det);"

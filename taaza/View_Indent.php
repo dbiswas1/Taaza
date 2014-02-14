@@ -30,7 +30,7 @@
 			$i_idx = $i_idx_arr['item_code'];
 			if (isset($_POST[$i_idx]) && $_POST[$i_idx] != 0)
 			{	
-				mysql_query("insert into indent_order (i_indent_no,i_item_code, qty) values ('$indent_no','$i_idx', '$_POST[$i_idx]' )");
+				mysql_query("insert into indent_order (i_indent_no,i_item_code, qty,date) values ('$indent_no','$i_idx', '$_POST[$i_idx]' ,STR_TO_DATE('$_POST[idate]', '%m-%d-%Y'))");
 				mysql_query("update inventory set primary_stock=primary_stock-'$_POST[$i_idx]' where s_item_code=$i_idx");
 			}
 		}
@@ -56,12 +56,12 @@
 					$updated_qty=$_POST[$i_idx]-$current_qty;
 			
 					mysql_query("update inventory set primary_stock=primary_stock-$updated_qty where s_item_code=$i_idx");
-					mysql_query("update indent_order set qty='$_POST[$i_idx]' where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'" );
+					mysql_query("update indent_order set qty='$_POST[$i_idx]',date=STR_TO_DATE('$_POST[idate]', '%m-%d-%Y') where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'" );
 					
 				}
 				if (isset($_POST[$i_idx]) && $_POST[$i_idx] != 0 && $in_up == 0)
 				{
-					mysql_query("insert into indent_order (i_indent_no,i_item_code, qty) values ('$_POST[indent_no_gen]','$i_idx', '$_POST[$i_idx]' )");
+					mysql_query("insert into indent_order (i_indent_no,i_item_code, qty,date) values ('$_POST[indent_no_gen]','$i_idx', '$_POST[$i_idx]',STR_TO_DATE('$_POST[idate]', '%m-%d-%Y') )");
 					
 					mysql_query("update inventory set primary_stock=primary_stock-'$_POST[$i_idx]' where s_item_code=$i_idx");
 				}

@@ -106,7 +106,7 @@
           <!-- End .title -->
           
           <div class="content top">
-          <form  name="pay_form" action="payment_transaction.php?client=active&t_pay_client=active"  onsubmit="return validate();" method="post">
+          <form  name="pay_form" action="Payment_Transaction.php?client=active&t_pay_client=active"  onsubmit="return validate();" method="post">
           
           		<fieldset>
                         <div class="form-row control-group row-fluid">
@@ -171,7 +171,7 @@
                         <button class="btn btn-primary pull-left btn-large"><i class="icon-caret-left"></i> Cancel</button>
                       </li>
                       <li class="next">
-                        <button class="btn btn-primary btn-large pull-right" name="pay_ed_btn" type="submit" value="pressed">Make Payment <i class="icon-caret-right"></i></button>
+                        <button class="btn btn-primary btn-large pull-right" name="pay_ed_btn" type="submit" value="pressed">SAVE <i class="icon-caret-right"></i></button>
                       </li>
                       
                     </ul>
@@ -309,16 +309,16 @@ function validate()
 	y=document.forms["pay_form"]["pay"].value;
 	x=document.forms["pay_form"]["cl_id"].value
 	z=document.forms["pay_form"]["vouch"].value
-	if (x == "" || y == "" || x == null || y == null || y == "0.00" || z == "" || z == "0.00" || z == null || z == 0 ) {
+	//if (x == "" || y == "" || x == null || y == null || y == "0.00" || z == "" || z == "0.00" || z == null || z == 0 ) {
 	
-		alert ('Client Name, Voucher Number and Amount are mandatory');
-		return false;
-	}
+		//alert ('Client Name, Voucher Number and Amount are mandatory');
+		//return false;
+	//}
 	
-	else{
+	
 		document.indentform.submit();
 		return true;
-	}
+	
 		
    
 } 

@@ -232,7 +232,7 @@ select * from invoice_history where date_format(in_date,'%d-%m-%Y')='25-11-2013'
 select im.item,sum(io.qty)as qty from item_master im,indent_order io , invoice_history ih where im.item_code=io.i_item_code and ih.in_h_item_code=io.i_item_code and io.i_indent_no=ih.in_h_indent_no and  date_format(ih.in_date,'%d-%m-%Y')='10-11-2013'  group by io.i_item_code;
 
 
-
+alter table indent_order add column date datetime;
 
 
 

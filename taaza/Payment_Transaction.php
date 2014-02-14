@@ -364,6 +364,7 @@
       $('#datatable_example').dataTable( {
         "sDom": "<'row-fluid table_top_bar'<'span12'<'to_hide_phone' f>>>t<'row-fluid control-group full top' <'span4 to_hide_tablet'l><'span8 pagination'p>>",
          "aaSorting": [[ 0, "asc" ]],
+		 "bStateSave": true,
         "bPaginate": true,
 
         "sPaginationType": "full_numbers",

@@ -52,7 +52,7 @@ $sl_no1=0;
 for ($i=0 ; $i<$row_count ; $i++){ 
 	
 	
-	$Price_report_query=mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io , invoice_history ih where im.item_code=io.i_item_code and ih.in_h_item_code=io.i_item_code and io.i_indent_no=ih.in_h_indent_no and  date_format(ih.in_date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3" );
+	$Price_report_query=mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code  and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3" );
 	
 	$stock_txt.='<tr class="c15">';
 		while($price_arr=mysql_fetch_array($Price_report_query)) {

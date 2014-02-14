@@ -58,7 +58,7 @@ primary key (indent_no), foreign key(i_client_id) references client(c_id) on del
 -- Create Indent_order Table to track indent Deatils
 create table indent_order (i_id int unsigned not null auto_increment, i_indent_no int unsigned  
 	not null, i_item_code int, 
-	qty double(6,2), primary key(i_id), foreign key(i_indent_no) references indent(indent_no) 
+	qty double(6,2), date datetime, primary key(i_id), foreign key(i_indent_no) references indent(indent_no) 
     on delete cascade , foreign key(i_item_code) 
 	references item_master(item_code) ON DELETE CASCADE  );
 

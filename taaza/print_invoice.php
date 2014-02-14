@@ -4,8 +4,12 @@ include('./mpdf/mpdf.php');
 
 include 'db_config.php' ;
 
+
+
 $conn=new createConnection();
+
 $conn->connect();
+
 $conn->selectdb();
 
 $mpdf=new mPDF();
@@ -28,8 +32,9 @@ while ($last_bill_arr=mysql_fetch_array($last_bill_query))
 if ($count_last_bill <= 1)
 		$last_bill = 0;
 
-$due_string="select pay_id,date_format(date,'%b-%d-%Y') as date, dues from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) order by pay_id desc limit 1";
-$last_pay_string="select pay_id,date_format(date,'%b-%d-%Y') as date, paid from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) and paid != 0 order by date desc limit 1";
+$due_string="select pay_id,date_format(date,'%b-%d-%Y') as date, new_dues from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) order by pay_id desc limit 1";
+
+$last_pay_string="select pay_id,date_format(date,'%b-%d-%Y') as date,date_format(date,'%Y-%m-%d') as date1, paid from payment_master where pay_c_id=".$_GET['cid']." and date <= DATE_SUB(STR_TO_DATE('".$m."-".$d."-".$y."','%b-%d-%Y'),INTERVAL 1 DAY) and paid != 0 order by date1 desc limit 1";
 
 
 $last_pay_query=mysql_query($last_pay_string);
@@ -48,7 +53,7 @@ $clientpaymet_count_arr=mysql_fetch_assoc($clientpaymet_count);
 
 
 
-$dues2=$due2_arr['dues'];
+$dues2=$due2_arr['new_dues'];
 $dues2_date=$due2_arr['date'];
 
 
@@ -117,9 +122,12 @@ $invoice_txt = '
 				//$dues= $dues - $total;
 				
 				if($clientpaymet_count_arr ['count'] == 1)
+
 				{
+
 					//echo "i am in";
 					$dues2=$dues-$total;
+
 				}
 				
 				$grand_total=$dues2+$total;

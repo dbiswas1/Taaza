@@ -129,7 +129,7 @@
                          
             	<tbody>
             	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
-                	 $result = mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io , invoice_history ih where im.item_code=io.i_item_code and ih.in_h_item_code=io.i_item_code and io.i_indent_no=ih.in_h_indent_no and  date_format(ih.in_date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
+                	 $result = mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code   and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
                 	//$result = mysql_query("select item,item_code as qty from item_master limit $limit,3");
                 ?>
                   <tr>
