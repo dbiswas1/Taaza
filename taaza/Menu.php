@@ -233,8 +233,16 @@
             <li class="active"><a href="daily_report.php?report=active&d_report=active">Daily Report</a></li>
              <?php }else {?>
              <li><a href="daily_report.php?report=active&d_report=active">Daily Report</a></li>
+             <?php } if (isset($_GET['m_report'])) {?>
+            <li class="active"><a href="MIS.php?report=active&m_report=active">MIS Report</a></li>
+             <?php }else {?>
+             <li><a href="MIS.php?report=active&m_report=active">MIS Report</a></li>
+             <?php } if (isset($_GET['p_report'])) {?>
+            <li class="active"><a href="PAL.php?report=active&p_report=active">P & L Report</a></li>
+             <?php }else {?>
+             <li><a href="PAL.php?report=active&p_report=active">P & L Report</a></li>
              <?php }?>
-            <li><a href="#">Place Holder</a></li>
+            
           </ul>
         </li>
       

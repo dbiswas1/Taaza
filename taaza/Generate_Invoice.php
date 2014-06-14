@@ -29,10 +29,13 @@
 			$build_indent1=mysql_query("select i_item_code from indent_order where i_indent_no='$_POST[inden_no]' ");
 			
 			$q_invoice_no1=mysql_query("select invoice_no from invoice where in_indent_no='$_POST[inden_no]'");
+
 			$q_invoice_arr=mysql_fetch_assoc($q_invoice_no1);
+
 			$q_invoice_no=$q_invoice_arr['invoice_no'];
 			
 			
+
 			
 			
 			while ($build_arr=mysql_fetch_array($build_indent1)){
@@ -71,10 +74,15 @@
 			$client_due_arr=mysql_fetch_assoc($client_due_id);
 			
 			$cur_due_query=mysql_query("select dues from client where c_id='$client_due_arr[in_c_id]'");
+
 			$cur_due_arr=mysql_fetch_assoc($cur_due_query);
+
 			$cur_due=$cur_due_arr['dues'];
+
 				
+
 				
+
 			mysql_query("insert into payment_master (invoice_no,new_dues,pay_c_id,paid,dues,date) values ($q_invoice_no,$cur_due+$amt,'$client_due_arr[in_c_id]',0,$cur_due,STR_TO_DATE('$indent_date','%d-%m-%Y'))");
 			
 			
@@ -192,18 +200,47 @@
                       
                       <option value="price1" selected>Price 1</option>
                       <option value="price2">Price 2</option>
+                      <option value="price3">Price 3</option>
+                      <option value="price4">Price 4</option>
                       <option value="secondary">Secondary</option>
+                     
                       <?php } elseif ($invoice_arr['price'] == 1){  ?>
 					 
-					  
+					  	
 					  <option value="price1" >Price 1</option>
                       <option value="price2" selected>Price 2</option>
+                      <option value="price3">Price 3</option>
+                      <option value="price4">Price 4</option>
                       <option value="secondary">Secondary</option>
                       
-                     <?php }  else { ?>
+                      
+                      
+                      
+                      
+                     <?php } elseif ($invoice_arr['price'] == 2){  ?>
+					 
+					  	
+					  <option value="price1" >Price 1</option>
+                      <option value="price2" >Price 2</option>
+                      <option value="price3" selected>Price 3</option>
+                      <option value="price4">Price 4</option>
+                      <option value="secondary">Secondary</option>
+                      
+                     <?php }  elseif ($invoice_arr['price'] == 3){  ?>
+                     
+                      <option value="price1" >Price 1</option>
+                      <option value="price2" >Price 2</option>
+                      <option value="price3" >Price 3</option>
+                      <option value="price4" selected>Price 4</option>
+                      <option value="secondary">Secondary</option>
+                     
+                     
+                     <?php } else { ?>
                      
                      <option value="price1" >Price 1</option>
-                      <option value="price2" >Price 2</option>
+                      <option value="price2">Price 2</option>
+                      <option value="price3">Price 3</option>
+                      <option value="price4">Price 4</option>
                       <option value="secondary" selected>Secondary</option>
 					  
 					  <?php } ?>

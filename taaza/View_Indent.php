@@ -18,6 +18,15 @@
 		//echo '<pre>'; print_r($_POST); echo '</pre>';
 		
 		if(isset($_POST["in_btn"])){
+		
+		//Do Not the Indent if the already a indent have been added
+		$client_exist1=mysql_query("select count(*) as cl_count from indent where i_client_id='$_POST[cl_id]' and i_date=STR_TO_DATE('$_POST[idate]', '%m-%d-%Y')");
+		$client_exist_arr=mysql_fetch_assoc($client_exist1);
+		$client_exist=$client_exist_arr['cl_count'];
+	
+		if($client_exist == 0)	
+		{
+		
 		mysql_query("insert into indent (i_client_id,price,i_date,notes) values('$_POST[cl_id]','$_POST[price]', STR_TO_DATE('$_POST[idate]', '%m-%d-%Y'),'$_POST[notes]' )" );
 		$indent_no1=mysql_query("select indent_no from 	indent order by indent_no desc limit 1");
 		$indent_arr=mysql_fetch_assoc($indent_no1);
@@ -36,18 +45,30 @@
 		}
 		
 		}
+		else
+		   {  ?>
+		   	  
+		   	  <script type="text/javascript">
+		   	  alert( "Indent already exist for the client");
+		   	  </script>
+<?php		   }
+		}
 		
 		if(isset($_POST['in_ed_btn']))
 		{
 			$i_idx1=mysql_query("select item_code from item_master");
 			//echo "<pre>"; print_r($_POST) ;  echo "</pre>";
 			while($i_idx_arr=mysql_fetch_array($i_idx1))
+
 			{
+
 				$i_idx = $i_idx_arr['item_code'];
 				$in_up1=mysql_query("select count(*) as c from indent_order where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'");
 				$in_up_arr=mysql_fetch_assoc($in_up1);
 				$in_up=$in_up_arr['c'];
+
 				if (isset($_POST[$i_idx])  && $in_up != 0)
+
 				{
 			
 					$current_qty1=mysql_query("select qty from indent_order where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'");
@@ -56,6 +77,7 @@
 					$updated_qty=$_POST[$i_idx]-$current_qty;
 			
 					mysql_query("update inventory set primary_stock=primary_stock-$updated_qty where s_item_code=$i_idx");
+
 					mysql_query("update indent_order set qty='$_POST[$i_idx]',date=STR_TO_DATE('$_POST[idate]', '%m-%d-%Y') where i_indent_no='$_POST[indent_no_gen]' and i_item_code='$i_idx'" );
 					
 				}
@@ -84,6 +106,7 @@
 			mysql_query("delete from indent_order where i_indent_no='$_POST[indentkey]'") ;
 			mysql_query("delete from indent where indent_no='$_POST[indentkey]'") ;
 			
+
 				
 			
 		}
@@ -251,20 +274,32 @@
 		 <?php 
 		 	
 		 	$pop_ind_result=mysql_query("select indent_no,i_client_id,date_format(i_date,'%D-%b-%Y') as i_date1, notes from indent where i_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY)");
+
 		 	while($pop_ind_arr= mysql_fetch_array($pop_ind_result)){
+
 		 	
+
 		 	
+
 		 		$client_id=$pop_ind_arr['i_client_id'];
+
 		 	
+
 		 		 
+
 		 		$shop_name1=mysql_query("select shop_name from client where c_id='$client_id'");
+
 		 		$shop_name_arr=mysql_fetch_assoc($shop_name1);
+
 		 		$shop_name=$shop_name_arr['shop_name']; 
 		 		
 		 		$indent_no=$pop_ind_arr['indent_no'];
 		 		$count1=mysql_query("select count(*) as c from indent_order ind,item_master i where ind.i_item_code=i.item_code and i_indent_no=$indent_no");
+
 		 		$count2=mysql_fetch_assoc($count1);
+
 		 		$count=$count2['c'];
+
 		 		 
 		 
 		 ?>

@@ -154,8 +154,25 @@
                       <?php } else {?>
                       <input type="radio" name="price" value="2" />
                       <?php } ?>
-                      Secondary 
+                      Price 3
                     </label>
+                     <label class="inline radio">
+                    	<?php if ($pr == 3){ ?>
+                      <input type="radio" name="price" value="3" checked="CHECKED"/>
+                      <?php } else {?>
+                      <input type="radio" name="price" value="3" />
+                      <?php } ?>
+                      Price 4
+                    </label>
+                     <label class="inline radio">
+                    	<?php if ($pr == 4){ ?>
+                      <input type="radio" name="price" value="4" checked="CHECKED"/>
+                      <?php } else {?>
+                      <input type="radio" name="price" value="4" />
+                      <?php } ?>
+                      Secondary
+                    </label>
+                    
                 </div>
              </div>
             

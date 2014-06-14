@@ -5,21 +5,33 @@ include('./mpdf/mpdf.php');
 
 include 'db_config.php' ;
 
+
+
 $conn=new createConnection();
+
 $conn->connect();
+
 $conn->selectdb();
 $mpdf=new mPDF();
+
 $mpdf->SetFooter('Taaza Tarkari Agro India PVT LTD ||Page {PAGENO} of {nb}');
 
 
 
 
+
 $item_count1 = mysql_query("select date_format(now(),'%b-%D-%Y') as datef,count(*) as c from item_master");
+
 $item_count2 = mysql_fetch_assoc($item_count1);
+
 $item_count=0;
+
 $item_count=$item_count2['c'];
 
+
+
 $row_count=ceil($item_count/3);
+
 $limit=0;
 
 list($m,$d,$y)=split('-',$_GET['date1']);
@@ -52,16 +64,120 @@ $sl_no1=0;
 for ($i=0 ; $i<$row_count ; $i++){ 
 	
 	
-	$Price_report_query=mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code  and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3" );
+	$Price_report_query=mysql_query("select im.item_code,im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code  and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3" );
 	
 	$stock_txt.='<tr class="c15">';
 		while($price_arr=mysql_fetch_array($Price_report_query)) {
 		++$sl_no1;	
 		
+		switch ($price_arr['item_code']) {
+                  			
+                  			case 4:
+                  			
+                  			 $stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/2,2).'</span></p></td>';
+							
+							break; case 52:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/25,2).'</span></p></td>';
+                    		
+                    		break; case 56:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/25,2).'</span></p></td>';
+          			
+                    			
+                    		break; case 69:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/3,2).'</span></p></td>';
+                    		
+                    		break; case 77:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/3,2).'</span></p></td>';
+                    		
+                    		break; case 78:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/4,2).'</span></p></td>';
+                    		
+                    		break; case 79:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/20,2).'</span></p></td>';
+                  	
+                  			break; case 80:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/5,2).'</span></p></td>'; 
+                  	
+                  			break; case 81:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/10,2).'</span></p></td>';
+                  	
+                  			break; case 82:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/6,2).'</span></p></td>';  
+                  	 
+                  			break; case 83:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/15,2).'</span></p></td>';
+                    				
+                    		break; case 84:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/8,2).'</span></p></td>';
+                    				
+                    		break; case 85:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/20,2).'</span></p></td>';
+                    			
+                    		break; case 87:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/2,2).'</span></p></td>';
+                    		
+                    		break; case 88:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/8,2).'</span></p></td>';
+                    				
+                    		break; case 89:
+							
+							$stock_txt.=' 
+							<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
+							<td class="c18"><p class="c7"><span class="ct6">'. round($price_arr[qty]/8,2).'</span></p></td>';
+                    								
+                  		   break; default:
+		
+		
+		
+		
     $stock_txt.=' 
 	<td class="c18"><p class="c22"><span class="ct6"> '.$price_arr[item].'</span></p></td>
 	<td class="c18"><p class="c7"><span class="ct6">'. $price_arr[qty].'</span></p></td>';
-		}
+		} }
 		
 
 $stock_txt.='</tr>';
@@ -75,9 +191,16 @@ $stock_txt.='</tbody>
 
 ';
 
+
+
 $mpdf->WriteHTML($stock_txt);
 
+
+
 $mpdf->Output();
+
 exit;
+
+
 
 ?>

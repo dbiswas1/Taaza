@@ -2,43 +2,76 @@
 include('./mpdf/mpdf.php');
 
 $Price_details="price1";
-if($_GET['priceval'] == 0){
+
+if($_GET['priceval'] == 1){
 	
 	$Price_details="price1";
 	$Price_Text="Price-1";
+
 }
-if($_GET['priceval'] == 1){
+if($_GET['priceval'] == 2){
+
 	$Price_details="price2";
 	$Price_Text="Price-2";
 }
-if($_GET['priceval'] == 2){
+
+if($_GET['priceval'] == 3){
+
+	$Price_details="price3";
+	$Price_Text="Price-3";
+}
+
+if($_GET['priceval'] == 4){
+
+	$Price_details="price4";
+	$Price_Text="Price-4";
+
+}
+
+
+if($_GET['priceval'] == 5){
+
 	$Price_details="secondary";
 	$Price_Text="SECONDARY";
 }
 
-if($_GET['priceval'] == 3){
+if($_GET['priceval'] == 6){
+
 	$Price_details="purchase";
 	$Price_Text="PURCHASE";
+
 }
 
 
 include 'db_config.php' ;
 
+
+
 $conn=new createConnection();
+
 $conn->connect();
+
 $conn->selectdb();
 $mpdf=new mPDF();
+
 $mpdf->SetFooter('Taaza Tarkari Agro India PVT LTD ||Page {PAGENO} of {nb}');
 
 
 
 
+
 $item_count1 = mysql_query("select date_format(now(),'%b-%D-%Y') as datef,count(*) as c from item_master");
+
 $item_count2 = mysql_fetch_assoc($item_count1);
+
 $item_count=0;
+
 $item_count=$item_count2['c'];
 
+
+
 $row_count=ceil($item_count/3);
+
 $limit=0;
 
 list($m,$d,$y)=split('-',$item_count2['datef']);
@@ -93,9 +126,16 @@ $stock_txt.='</tbody>
 
 ';
 
+
+
 $mpdf->WriteHTML($stock_txt);
 
+
+
 $mpdf->Output();
+
 exit;
+
+
 
 ?>

@@ -22,6 +22,14 @@
 		
 		$i_idx1=mysql_query("select item_code from item_master");
 		$total_amt=0;
+		
+		//Check if the biller is already present for that day
+		$biller_exist1=mysql_query("select count(*) as bl_count from purchase_order where p_b_id='$_POST[b_id]' and p_date=STR_TO_DATE('$_POST[idate]', '%m-%d-%Y')");
+		$biller_exist_arr=mysql_fetch_assoc($biller_exist1);
+		$biller_exist=$biller_exist_arr['bl_count'];
+		
+		if($biller_exist == 0) {
+		
 		while($i_idx_arr=mysql_fetch_array($i_idx1))
 		{	
 			$i_idx = $i_idx_arr['item_code'];
@@ -51,13 +59,28 @@
 		
 		
 			$bill_cur_due_query=mysql_query("select dues from biller where b_id='$_POST[b_id]'");
+
 			$bill_cur_due_arr=mysql_fetch_assoc($bill_cur_due_query);
+
 			$bill_cur_due=$bill_cur_due_arr['dues'];
+
 		
+
 		
+
 			mysql_query("insert into bill_payment_master (bill_b_id,paid,dues,date) values ('$_POST[b_id]',0,$bill_cur_due,now())");
 			mysql_query("update biller set dues = dues + $total_amt where b_id = '$_POST[b_id]'"); 
 		}
+		else { ?>
+				<script type="text/javascript">
+				alert ("Purchase for the biller already Exist");
+				</script>
+		
+	<?php	}
+		
+		
+		}
+		
 		
 		if(isset($_POST['pu_ed_btn']))
 		{
@@ -95,15 +118,22 @@
 					mysql_query($update_purchase_string);
 					
 					$avg_string="select TRUNCATE(sum(p_price)/sum(p_qty),2) as avg_price from purchase_order where p_date = STR_TO_DATE('".$_POST['idate']."','%m-%d-%Y') and pu_item_code=$i_idx group by pu_item_code,p_date" ;
+
 					
 					//echo $avg_string;
 					
+
 					$avg_price_query=mysql_query($avg_string);
+
 					$avg_price_arr=mysql_fetch_assoc($avg_price_query);
+
 					$avg_price=$avg_price_arr['avg_price'];
+
 					
+
 					mysql_query("update price_list set purchase=$avg_price where p_item_code=$i_idx");
 					//$total_amt=$total_amt+$_POST[$pr_idx];
+
 					
 					
 				}
@@ -247,6 +277,7 @@
               <tbody>
            <?php 
            
+
                 $sl=0;
               	$view_in_result1=mysql_query("select b.b_id,p.p_id, b.market_name, sum(p.p_price) as amt, date_format(p.p_date,'%m-%d-%Y') as pu_date,date_format(p.p_date,'%D-%b-%Y') as date from biller b , purchase_order p where p.p_b_id=b.b_id and p_date>=DATE_SUB(CURDATE(),INTERVAL 7 DAY) group by p.p_date, p.p_b_id ");
               	while($view_in_arr=mysql_fetch_array($view_in_result1)){

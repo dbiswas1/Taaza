@@ -81,23 +81,36 @@
 		$ddate=date('M-d-Y');
 		
 		if(isset($_POST['idate']))
+
 		{
+
 			 $date=$_POST['idate'];
 			 $ddate=str_replace("-", "/", $_POST['idate']);
 		
 			 
+
 		}
 		
 	
+
 		 
+
 		 
+
 		$item_count1 = mysql_query('select count(*) as c from item_master');
+
 		$item_count2 = mysql_fetch_assoc($item_count1);
+
 		$item_count=0;
+
 		$item_count=$item_count2['c'];
+
 		
+
 		$row_count=ceil($item_count/3);
+
 		$limit=0;
+
 	
 		
     ?>
@@ -129,7 +142,7 @@
                          
             	<tbody>
             	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
-                	 $result = mysql_query("select im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code   and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
+                	 $result = mysql_query("select im.item_code,im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code   and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
                 	//$result = mysql_query("select item,item_code as qty from item_master limit $limit,3");
                 ?>
                   <tr>
@@ -137,15 +150,80 @@
                   	while($item_arr = mysql_fetch_array( $result ))
                   		{
                   			
-                  ?>
+                  			switch ($item_arr['item_code']) {
+                  			
+                  			case 4:
+                  				?>
+                  				<td><?php echo $item_arr['item'] ;?></td>
+                    			<td><?php echo round ($item_arr['qty']/2 ,2) ;?></td>
                     		
-                    		<td><?php echo $item_arr['item'] ;?></td>
+                    		<?php  break 1; case 52: ?>
+                  				<td><?php echo $item_arr['item'] ;?></td>
+                    			<td><?php echo round ($item_arr['qty']/25 ,2) ;?></td> 
+          			
+                    			
+                    		<?php break 1; case 56: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/25 ,2) ;?></td>
                     		
+                    		<?php break 1; case 69: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/3 ,2) ;?></td>
+                    		
+                    		<?php break 1; case 77: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/3 ,2) ;?></td> 
+                    		
+                    		<?php break 1; case 78: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/4 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 79: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/20 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 80: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/5 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 81: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/10 ,2) ;?></td>  
+                  	 
+                  			<?php break 1; case 82: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/10 ,6) ;?></td>
+                    				
+                    		<?php break 1; case 83: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/15 ,2) ;?></td>
+                    				
+                    		<?php break 1; case 84: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ;?></td>
+                    			
+                    		<?php break 1; case 85: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/20 ,2) ;?></td>
+                    		
+                    		<?php break 1; case 87: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/2 ,2) ;?></td>
+                    				
+                    				
+                    		<?php break 1; case 88: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ;?></td>
+                    				
+                    		<?php break 1; case 89: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ;?></td>
+                    								
+                  			<?php break 1; default :?>
+                    			<td><?php echo $item_arr['item'] ;?></td>
+                    			<td><?php echo $item_arr['qty'] ;?></td> 		
                     
-                    		<td><?php echo $item_arr['qty'] ;?></td>
-                    		
-                    
-                   <?php }
+                   <?php } }
                    $limit=$limit+3; ?>
                     
                   </tr>

@@ -10,7 +10,7 @@
 	session_start();	
 	
 
-	if (  isset($_POST["sec_btn"])  || isset($_POST["p1_btn"]) ||  isset($_POST["p2_btn"]) || isset($_POST["pur_btn"]))
+	if (  isset($_POST["sec_btn"])  || isset($_POST["p1_btn"]) ||  isset($_POST["p2_btn"]) ||  isset($_POST["p3_btn"]) ||  isset($_POST["p4_btn"]) || isset($_POST["pur_btn"]))
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
@@ -19,17 +19,29 @@
 		if (  isset($_POST["sec_btn"])){
 			//echo "Secondary";
 			$i=0;
+
 			$p3_result=mysql_query("select p_item_code from price_list");
+
 			while ($p3_indx=mysql_fetch_array($p3_result)){
+
 					
+
 				$i=$p3_indx['p_item_code'];
+
 				//echo $i;
-				$value2=$_POST[$i];
+
+				$value_sec=$_POST[$i];
+
 				//echo $_POST[$i];
-				mysql_query("update price_list set secondary=$value2 where p_item_code=$i" );
+
+				mysql_query("update price_list set secondary=$value_sec where p_item_code=$i" );
+
 					
+
 			}
+
 			
+
 			}
 		
 		
@@ -38,14 +50,22 @@
 		if (  isset($_POST["p1_btn"])){
 			//echo"Primary";
 			$p_result=mysql_query("select p_item_code from price_list");
+
 			while ($p_indx=mysql_fetch_array($p_result)){
+
 					
+
 				$i=$p_indx['p_item_code'];
+
 				//echo $i;	
-				$value=$_POST[$i];
+
+				$value1=$_POST[$i];
 				//echo $_POST[$i];
-				mysql_query("update price_list set price1=$value where p_item_code=$i" );
+
+				mysql_query("update price_list set price1=$value1 where p_item_code=$i" );
+
 					
+
 			}
 			
 			
@@ -54,31 +74,101 @@
 		if (  isset($_POST["p2_btn"])){
 			$i=0;
 			$p2_result=mysql_query("select p_item_code from price_list");
+
 			while ($p2_indx=mysql_fetch_array($p2_result)){
+
 					
+
 				$i=$p2_indx['p_item_code'];
+
 				//echo $i;
-				$value1=$_POST[$i];
+
+				$value2=$_POST[$i];
+
 				//echo $_POST[$i];
-				mysql_query("update price_list set price2=$value1 where p_item_code=$i" );
+
+				mysql_query("update price_list set price2=$value2 where p_item_code=$i" );
+
 					
+
 			}
 			//echo "Primary2";
 		}
 		
-		if (  isset($_POST["pur_btn"])){
+		if (  isset($_POST["p3_btn"])){
 			$i=0;
-			$pur_result=mysql_query("select p_item_code from price_list");
-			while ($pur_indx=mysql_fetch_array($pur_result)){
+			$p3_result=mysql_query("select p_item_code from price_list");
+
+			while ($p3_indx=mysql_fetch_array($p3_result)){
+
 					
-				$i=$pur_indx['p_item_code'];
+
+				$i=$p3_indx['p_item_code'];
+
 				//echo $i;
+
 				$value3=$_POST[$i];
+
 				//echo $_POST[$i];
-				mysql_query("update price_list set purchase=$value3 where p_item_code=$i" );
+
+				mysql_query("update price_list set price3=$value3 where p_item_code=$i" );
+
 					
+
 			}
+			//echo "Primary3";
+		}
+		
+		if (  isset($_POST["p4_btn"])){
+			$i=0;
+			$p4_result=mysql_query("select p_item_code from price_list");
+
+			while ($p4_indx=mysql_fetch_array($p4_result)){
+
+					
+
+				$i=$p4_indx['p_item_code'];
+
+				//echo $i;
+
+				$value4=$_POST[$i];
+
+				//echo $_POST[$i];
+
+				mysql_query("update price_list set price4=$value4 where p_item_code=$i" );
+
+					
+
+			}
+			//echo "Primary4";
+		}
+		
+		if (  isset($_POST["pur_btn"])){
+
+			$i=0;
+
+			$pur_result=mysql_query("select p_item_code from price_list");
+
+			while ($pur_indx=mysql_fetch_array($pur_result)){
+
+					
+
+				$i=$pur_indx['p_item_code'];
+
+				//echo $i;
+
+				$value_pur=$_POST[$i];
+
+				//echo $_POST[$i];
+
+				mysql_query("update price_list set purchase=$value_pur where p_item_code=$i" );
+
+					
+
+			}
+
 			//echo "Purchase";
+
 		}
 			
 		
@@ -152,21 +242,29 @@
               <ul id="tabExample1" class="nav nav-tabs">
               
               <?php if(isset($_GET['tab1'])) {?>
-                <li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab1=pr1" >Price 1</a></li>
+                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab1=pr1" >Price 1</a></li>
                <?php } else { ?>
-               	<li ><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab1=pr1">Price 1</a></li>
+               		<li ><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab1=pr1">Price 1</a></li>
                <?php } if(isset($_GET['tab2'])) {?>
-                <li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab2=pr2" >Price 2</a></li>
+               	 <li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab2=pr2" >Price 2</a></li>
                 <?php } else { ?>
                 	<li><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab2=pr2" >Price 2</a></li>
                 <?php } if(isset($_GET['tab3'])) { ?>
-                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3" >Secondary</a></li>
+                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3" >Price 3</a></li>
+               <?php } else { ?>
+               		<li ><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3">Price 3</a></li>
+               <?php } if(isset($_GET['tab4'])) {?>
+                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4" >Price 4</a></li>
+               <?php } else { ?>
+               		<li ><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4">Price 4</a></li>
+               <?php } if(isset($_GET['tab5'])) {?>
+                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab5=pr5" >Secondary</a></li>
                 <?php } else { ?>
-                	<li><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3" >Secondary</a></li>
-                <?php } if(isset($_GET['tab4'])) { ?>
-                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4" >Purchase</a></li>
+                	<li><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab5=pr5" >Secondary</a></li>
+                <?php } if(isset($_GET['tab6'])) { ?>
+                	<li class="active"><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab6=pr6" >Purchase</a></li>
                 <?php } else { ?>
-                	<li><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4" >Purchase</a></li>
+                	<li><a href="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab6=pr6" >Purchase</a></li>
                 <?php } ?>
                 
               </ul>
@@ -219,7 +317,7 @@
               </table>
             	 
             	 <p align="center"> <button  type="submit" name="p1_btn" value="p1_v" class="btn btn-primary">Save changes</button> </p>
-            	 <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=0';"  class="btn ">Print</button></a> </p>
+            	 <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=1';"  class="btn ">Print</button></a> </p>
             	 
 				<input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				</div>
@@ -272,16 +370,17 @@
                 </table>
               <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
               <p align="center"> <button name="p2_btn" value="p2_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
-              <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=1';"  class="btn ">Print</button></a> </p>
+              <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=2';"  class="btn ">Print</button></a> </p>
 
                 </div>
                 </form>
                 <?php } ?>
                 
-                <?php if(isset($_GET['tab3'])) {?>
                 
-             <form name="secondary" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3" method="post"> 
-             <div class="tab-pane fade in active" id="profile2">
+                
+                <?php if(isset($_GET['tab3'])) {?>
+                 <form name="p3" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab3=pr3" method="post">
+                <div class="tab-pane fade in active" id="profile1">
                    <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
                 <thead>
                   <tr>
@@ -305,13 +404,125 @@
                   		$p3row_count=ceil($price3_count/3);
                   		$limit=0;
                   		for ($i=0 ; $i<$p3row_count ; $i++){
-                  			$price3_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.secondary, p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
+                  			$price3_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.price3, p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
                    ?>
                   <tr>
                         <?php while($price3_arr=mysql_fetch_array($price3_result)) { ?>
                     <td><?php echo $price3_arr['item'] ; ?></td>
-                    <td><?php echo $price3_arr['purchase'] ; ?></td>
-                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price3_arr['p_item_code'] ;?>" value="<?php echo $price3_arr['secondary'] ;?>"  type="text" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+                    <td>&nbsp;&nbsp;<?php echo $price3_arr['purchase'] ; ?></td>
+                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price3_arr['p_item_code'] ;?>" value="<?php echo $price3_arr['price3'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+              
+            
+                  <?php 
+                   }
+                   $limit=$limit+3;
+                   
+                   }  ?>
+  
+                  </tbody>
+                </table>
+              <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
+              <p align="center"> <button name="p3_btn" value="p3_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
+              <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=3';"  class="btn ">Print</button></a> </p>
+
+                </div>
+                </form>
+                <?php } ?>
+
+                
+                     <?php if(isset($_GET['tab4'])) {?>
+                 <form name="p4" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4" method="post">
+                <div class="tab-pane fade in active" id="profile1">
+                   <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
+                <thead>
+                  <tr>
+                   <th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+                    <th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+   					<th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+                   
+                  </tr>
+                </thead>
+            	<tbody>
+                  <?php 
+                  		$price4_count=mysql_query("select count(*) as c from price_list p, item_master i where i.item_code=p.p_item_code");
+                  		$price4_count2=mysql_fetch_assoc($price4_count);
+                  		$price4_count=$price4_count2['c'];
+                  		$p4row_count=ceil($price4_count/3);
+                  		$limit=0;
+                  		for ($i=0 ; $i<$p4row_count ; $i++){
+                  			$price4_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.price4, p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
+                   ?>
+                  <tr>
+                        <?php while($price4_arr=mysql_fetch_array($price4_result)) { ?>
+                    <td><?php echo $price4_arr['item'] ; ?></td>
+                    <td>&nbsp;&nbsp;<?php echo $price4_arr['purchase'] ; ?></td>
+                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price4_arr['p_item_code'] ;?>" value="<?php echo $price4_arr['price4'] ;?>"  type="text"  onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+              
+            
+                  <?php 
+                   }
+                   $limit=$limit+3;
+                   
+                   }  ?>
+  
+                  </tbody>
+                </table>
+              <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
+              <p align="center"> <button name="p4_btn" value="p4_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
+              <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=4';"  class="btn ">Print</button></a> </p>
+
+                </div>
+                </form>
+                <?php } ?>
+                
+
+    
+                
+                
+                
+                
+                
+                               
+            <?php if(isset($_GET['tab5'])) {?>
+                
+             <form name="secondary" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab5=pr5" method="post"> 
+             <div class="tab-pane fade in active" id="profile2">
+                   <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
+                <thead>
+                  <tr>
+                   <th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+                    <th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+   					<th class="no_sort"> Item Name </th>
+                    <th class="no_sort"> Purchase </th>
+                    <th class="no_sort"> Price </th>
+                   
+                  </tr>
+                </thead>
+            	<tbody>
+                  <?php 
+                  		$price5_count=mysql_query("select count(*) as c from price_list p, item_master i where i.item_code=p.p_item_code");
+                  		$price5_count2=mysql_fetch_assoc($price5_count);
+                  		$price5_count=$price5_count2['c'];
+                  		$p5row_count=ceil($price5_count/3);
+                  		$limit=0;
+                  		for ($i=0 ; $i<$p5row_count ; $i++){
+                  			$price5_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.secondary, p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
+                   ?>
+                  <tr>
+                        <?php while($price5_arr=mysql_fetch_array($price5_result)) { ?>
+                    <td><?php echo $price5_arr['item'] ; ?></td>
+                    <td><?php echo $price5_arr['purchase'] ; ?></td>
+                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price5_arr['p_item_code'] ;?>" value="<?php echo $price5_arr['secondary'] ;?>"  type="text" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
               
             
                   <?php 
@@ -324,13 +535,13 @@
                           </table>
                           <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				    <p align="center"> <button name=sec_btn value="se_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
-				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=2';"  class="btn ">Print</button></a> </p>
+				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=5';"  class="btn ">Print</button></a> </p>
                 </div>
              </form>
              <?php } ?>
              
-             <?php if(isset($_GET['tab4'])) {?>
-              <form name="purchase" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab4=pr4" method="post"> 
+             <?php if(isset($_GET['tab6'])) {?>
+              <form name="purchase" action="selling_price.php?invoice=active&in_invoice=in&s_invoice=active&tab6=pr6" method="post"> 
              <div class="tab-pane fade in active" id="profile3">
                    <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
                 <thead>
@@ -349,19 +560,19 @@
                 </thead>
             	<tbody>
                   <?php 
-                  		$price4_count=mysql_query("select count(*) as c from price_list p, item_master i where i.item_code=p.p_item_code");
-                  		$price4_count2=mysql_fetch_assoc($price4_count);
-                  		$price4_count=$price4_count2['c'];
-                  		$p4row_count=ceil($price4_count/3);
+                  		$price6_count=mysql_query("select count(*) as c from price_list p, item_master i where i.item_code=p.p_item_code");
+                  		$price6_count2=mysql_fetch_assoc($price6_count);
+                  		$price6_count=$price6_count2['c'];
+                  		$p6row_count=ceil($price6_count/3);
                   		$limit=0;
-                  		for ($i=0 ; $i<$p4row_count ; $i++){
-                  			$price4_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
+                  		for ($i=0 ; $i<$p6row_count ; $i++){
+                  			$price6_result=mysql_query("select p.p_item_code,p.p_id,i.item,p.purchase from item_master i, price_list p where i.item_code=p.p_item_code limit $limit,3");
                    ?>
                   <tr>
-                        <?php while($price4_arr=mysql_fetch_array($price4_result)) { ?>
-                    <td><?php echo $price4_arr['p_id'] ; ?></td>
-                    <td><?php echo $price4_arr['item'] ; ?></td>
-                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price4_arr['p_item_code'] ;?>" value="<?php echo $price4_arr['purchase'] ;?>"  type="text" placeholder="<?php echo $price1_arr['purchase'] ;?>" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
+                        <?php while($price6_arr=mysql_fetch_array($price6_result)) { ?>
+                    <td><?php echo $price6_arr['p_id'] ; ?></td>
+                    <td><?php echo $price6_arr['item'] ; ?></td>
+                     <td class="to_hide_phone"> <input class="row-fluid span6" name="<?php echo $price6_arr['p_item_code'] ;?>" value="<?php echo $price6_arr['purchase'] ;?>"  type="text" placeholder="<?php echo $price1_arr['purchase'] ;?>" onclick="this.select();" onfocus="this.select();" onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);"> </td>
               
             
                   <?php 
@@ -374,7 +585,7 @@
                           </table>
                           <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
 				    <p align="center"> <button name=pur_btn value="se_v" type="submit"  class="btn btn-primary">Save changes</button> </p>
-				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=3';"  class="btn ">Print</button></a> </p>
+				    <p align="center"> <a><button name="prnt_btn" type="button" onclick="location.href='print_price_list.php?priceval=6';"  class="btn ">Print</button></a> </p>
                 </div>
              </form>
              <?php } ?>

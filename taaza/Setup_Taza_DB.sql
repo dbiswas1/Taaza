@@ -48,6 +48,9 @@ p_id int not null auto_increment, p_item_code int , price1 decimal(9,2) default 
 primary key(p_id), foreign key(p_item_code) references item_master(item_code) ON DELETE CASCADE) ;
 
 
+alter table price_list add column (price3 decimal(9,2) default 0.00, price4 decimal(9,2) default 0.00);
+
+
 -- Create Indent Table summary
 create table indent (indent_no int unsigned not null auto_increment, i_client_id int not null, 
 price tinyint(1) not null default 0, invoiced tinyint(1) not null default 0, i_date DATETIME NOT NULL,notes varchar(100),
