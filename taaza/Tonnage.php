@@ -9,34 +9,13 @@
 
 	session_start();	
 	
-	$pay_arr_query=mysql_query("select p.pay_id,c.shop_name,p.paid,date_format(p.date,'%m-%d-%Y') as pay_date,p.pay_v_no,p.dues from client c , payment_master p where p.pay_id='$_GET[pid]' and c.c_id=p.pay_c_id ");
-	$pay_arr=mysql_fetch_assoc($pay_arr_query);
-	
 
-	if (  isset($_POST['pday_btn']) )
+	if (  isset($_POST["in_btn"]) )
 	{
 		
 	if ($_POST["formid"] == $_SESSION["formid"])
 	{
 		$_SESSION["formid"] = '';
-		//echo '<pre>'; print_r($_POST); echo '</pre>';
-		$cur_due_query=mysql_query("select dues from client where c_id='$_POST[cl_id]'");
-		$cur_due_arr=mysql_fetch_assoc($cur_due_query);
-		$curr_due= $cur_due_arr['dues'] - $_POST['pay'] ;
-		$insert_query = "insert into payment_master (pay_c_id,paid,date,pay_v_no,dues) values  (". $_POST['cl_id']. ",".$_POST['pay']. "," . "STR_TO_DATE('".$_POST['date']."', '%m-%d-%Y'),".$_POST['vouch'].",". $curr_due.   ")";
-		//echo $insert_query;
-		$client_id = $_POST['cl_id'];
-		$last_in_amt_query=mysql_query("select amount from invoice where in_c_id=$client_id order by in_date desc limit 1");
-		$last_in_amt_arr=mysql_fetch_assoc($last_in_amt_query);
-		$last_in_amt=$last_in_amt_arr['amount'];
-		$pay=$_POST['pay'];
-		
-		//echo "update client set dues=(($last_in_amt+dues)-$pay) where c_id=$client_id";
-		
-		mysql_query($insert_query);
-		mysql_query("update client set dues=(dues-$pay) where c_id=$client_id");
-		
-		
 		
 	}
 	else
@@ -50,11 +29,12 @@
 	
 ?>
 
+
 <!DOCTYPE html>
 <html class="sidebar_default no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taaza Tarkari - Edit Payment </title>
+<title>Taaza Tarkari- Indent Report</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="">
@@ -82,121 +62,221 @@
     </li>
   </ul>
 </div>
-	<!-- Responsive part -->
-
-		<?php include 'Menu.php' ; ?>
-      <!-- End sidebar_box --> 
+<?php include 'Menu.php' ; ?>
+<!-- End sidebar_box --> 
       
     </div>
   </div>
 </div>
-<div id="main" style="min-height:1000px">
+<div id="main">
   <div class="container">
 		<?php include 'top.php' ; ?>
 		<!-- End Top Right -->
-    
+   
+   
+    <?php 
+   
+   		
+		$date = date('m-d-Y'); 
+		$ddate=date('M-d-Y');
+		
+		if(isset($_POST['idate']))
 
-    
+		{
+
+			 $date=$_POST['idate'];
+			 $ddate=str_replace("-", "/", $_POST['idate']);
+		
+			 
+
+		}
+		
+	
+
+		 
+
+		 
+
+		$item_count1 = mysql_query('select count(*) as c from item_master');
+
+		$item_count2 = mysql_fetch_assoc($item_count1);
+
+		$item_count=0;
+
+		$item_count=$item_count2['c'];
+
+		
+
+		$row_count=ceil($item_count/3);
+
+		$limit=0;
+
+	
+		
+    ?>
+   
     <div id="main_container">
       <div class="row-fluid">
-        <div class="box color_24">
-          <div class="title">
-            <h4> <span>Edit  Payment </span> </h4>
-          </div>
-          <!-- End .title -->
-          
-          <div class="content top">
-          <form  name="pay_form" action="View_Payment.php?client=active&v_pay_client=active"  onsubmit="return validate();" method="post">
-          
-          		<fieldset>
-                        <div class="form-row control-group row-fluid">
-                          <label class="control-label span2">Chosse a Client</label>
-                          <div class="controls span9">
-                            <select name="cl_id"  class="chzn-select">
-                              <option value="<?php echo $_GET['cid']; ?>" selected><?php echo $_GET['shop_name']; ?></option>
-                             <?php 
-                             	//$client_array=mysql_query("select c_id, shop_name from client where c_id != '$_GET[cid]'");
-                             	//while ($cl_arr = mysql_fetch_array($client_array)) {?>
-                              
-                            <!--    <option value="<?php // echo $cl_arr['c_id']; ?>"><?php //echo $cl_arr['shop_name']; ?></option> -->
-                              <?php //}  ?>
-                              
-                            </select>
-                          </div>
-                        </div>
-                        
-                        <div class="form-row control-group row-fluid">
-                          <label class="control-label span2">Select Date</label>
-                          <div class="controls span9">
-                          	<?php $date = $pay_arr['pay_date']; ?>
-                            <input type="text" id="datepicker1"  name="date" value="<?php echo $date ;?>" 	class="row-fluid">
-                          </div>
-                        </div>
-                        
-                        <div class="control-group row-fluid"> 
-                          <!-- Password -->
-                          <label class="control-label span2"  for="name">Voucher no</label>
-                          <div class="controls span9">
-                            <input type="text"  name="vouch" value="<?php echo $pay_arr['pay_v_no']; ?>" placeholder="<?php echo $pay_arr['pay_v_no']; ?>" class="row-fluid"  onfocus="this.value='';"  onblur="extractNumber(this,0,false);" onkeyup="extractNumber(this,0,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
-                          </div>
-                        </div>
-                        
-                       <div class="control-group row-fluid"> 
-                          <!-- Password -->
-                          <label class="control-label span2"  for="name">Amount</label>
-                          <div class="controls span9">
-                            <input type="text"  name="pay" value="<?php echo $pay_arr['paid']; ?>" placeholder="<?php echo $pay_arr['paid']; ?>" class="row-fluid" onclick="this.select();" onfocus="this.select();"  onblur="extractNumber(this,2,false);" onkeyup="extractNumber(this,2,false);" onkeypress="return blockNonNumbers(this, event, true, false);">
-                          </div>
-                        </div>
-                  		
-                  		<div class="control-group row-fluid"> 
-                  			<label class="control-label span2"  for="name">Dues</label>
-                  			<label class="control-label span2"  for="name"><?php echo $pay_arr['dues']; ?></label>
-                  		</div>
-                       
-                     
-                      </fieldset>
-                      
-                   <div class="description content">
-                    <ul class="pager wizard mb5">
-                      <li class="previous ">
-                        <button class="btn btn-primary pull-left btn-large"><i class="icon-caret-left"></i> Cancel</button>
-                      </li>
-                      <li class="next">
-                        <button class="btn btn-primary btn-large pull-right" name="pay_ed_btn" type="submit" value="pressed">Make Payment <i class="icon-caret-right"></i></button>
-                      </li>
-                      
-                    </ul>
-                  </div>
-          		
-  <?php $conn->close(); ?>
-            <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
-            <input type="hidden" name="pay_id" value="<?php echo $pay_arr['pay_id'] ;?>" />
-            </form>
-          </div>
-          <!-- End .content --> 
-        </div>
-        <!-- End box --> 
-      </div>
-      <!-- End .row-fluid --> 
-      
-    </div>
-  
-    	
-    
-    
-    <!-- End #container --> 
-  </div>
-  
+        <div class="span12">
+        <form name="date_form" action="Tonnage.php?indent=active&in_indent=in&to_indent=active"  method="post">
+          <div class="box paint color_25">
+            <div class="title">
+              <h4> <i class="icon-book"></i><span>Total Tonnage Report (<?php echo date('M-d-Y', strtotime($ddate));?>)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Change Date: <input align="right" class="span2" name="idate" type="text" id="datepicker1" value="<?php echo $date ;?>" class="row-fluid"></span> </h4>
+            	
+			    <?php $totalton=0; ?>          
+               
+             </div>
+             <div class="content top ">
+              <table id="datatable_example" class="responsive table table-striped table-bordered" style="width:100%;margin-bottom:0; ">
+                <thead>
+                
+                  <tr>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+                    <th class="no_sort"> Item</th>
+                    <th class="no_sort"> Qty </th>
+				   </tr>
+                </thead>
+                         
+            	<tbody>
+            	<?php  for ($i=0 ; $i<$row_count ; $i++){ 
+                	 $result = mysql_query("select im.item_code,im.item,sum(io.qty) as qty from item_master im,indent_order io  where im.item_code=io.i_item_code   and  date_format(io.date,'%m-%d-%Y')='$date' and qty > 0 group by io.i_item_code limit $limit,3") or die(mysql_error());
+                	//$result = mysql_query("select item,item_code as qty from item_master limit $limit,3");
+                ?>
+                  <tr>
+                  <?php 
+                  	while($item_arr = mysql_fetch_array( $result ))
+                  		{
+                  			
+                  			switch ($item_arr['item_code']) {
+                  			
+                  			case 4:
+                  				?>
+                  				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/2); ?></td>
+                    			<td><?php echo round ($item_arr['qty']/2 ,2) ;?></td>
+                    		
+                    		<?php  break 1; case 52: ?>
+                  				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/25) ;?></td>
+                    			<td><?php echo round ($item_arr['qty']/25 ,2) ;?></td> 
+          			
+                    			
+                    		<?php break 1; case 56: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/25); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/25 ,2) ;?></td>
+                    		
+                    		<?php break 1; case 69: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/3); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/3 ,2) ;?></td>
+                    		
+                    		<?php break 1; case 77: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/3); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/3 ,2) ;?></td> 
+                    		
+                    		<?php break 1; case 78: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/4); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/4 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 79: ?>
+                    				<td><?php echo $item_arr['item']  ; $totalton=$totalton+($item_arr['qty']/20); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/20 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 80: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/5); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/5 ,2) ;?></td>  
+                  	
+                  			<?php break 1; case 81: ?>
+                    				<td><?php echo $item_arr['item'] ;  $totalton=$totalton+($item_arr['qty']/10); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/10 ,2) ;?></td>  
+                  	 
+                  			<?php break 1; case 82: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/6); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/6 ,2) ;?></td>
+                    				
+                    		<?php break 1; case 83: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/15); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/15 ,2) ;?></td>
+                    				
+                    		<?php break 1; case 84: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/8); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ;?></td>
+                    			
+                    		<?php break 1; case 85: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/20); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/20 ,2) ;?></td>
+                    		
+                    		<?php break 1; case 87: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/2); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/2 ,2) ;?></td>
+                    				
+                    				
+                    		<?php break 1; case 88: ?>
+                    				<td><?php echo $item_arr['item'] ;?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ; $totalton=$totalton+($item_arr['qty']/8); ?></td>
+                    				
+                    		<?php break 1; case 89: ?>
+                    				<td><?php echo $item_arr['item'] ; $totalton=$totalton+($item_arr['qty']/8); ?></td>
+                    				<td><?php echo round ($item_arr['qty']/8 ,2) ;?></td>
+                    								
+                  			<?php break 1; default :?>
+                    			<td><?php echo $item_arr['item'] ; $totalton=$totalton+$item_arr['qty'] ;?></td>
+                    			<td><?php echo $item_arr['qty'] ;?></td> 		
+                    
+                   <?php } }
+                   $limit=$limit+3; ?>
+                    
+                  </tr>
+                  <?php }$conn->close(); ?>
+                  <tr><b>Total Tonnage: <?php echo round($totalton,2);  ?> KG</b></tr>
+                  
+                  </tbody>
+              </table>
+            
+            
+         
 
-  
-  
-  
-  
-  
-  
-    		<?php include 'foot.php' ; ?>
+          
+          
+          
+         
+           
+        </div>
+        
+        
+                <div class="accordion" id="accordion3">
+                <div class="accordion-group">
+                  <div id="collapseOne1" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner"><textarea id="text" name="notes" rows="3" class="row-fluid"></textarea></div>
+                  </div>
+                </div>
+          
+        </div>
+        <!-- End Content -->
+       
+		         
+                  
+       <p align="center"> <button  type="button" onclick="location.href='print_tonnage_report.php?date1=<?php echo date('M-d-Y', strtotime($ddate));?>&date=<?php echo $date ;?>';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
+        </div>
+        <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
+        </form>
+        <!-- End Box --> 
+        	 
+      </div>
+      <!-- End span12 -->
+    </div>
+    
+     
+    
+				
+				
+		  
+            
+   
+  </div> <!-- End #container -->
+   		<?php include 'foot.php' ; ?>
 		 <!-- End Footer -->
+		
 <div class="background_changer dropdown">
   <div class="dropdown" id="colors_pallete"> <a data-toggle="dropdown" data-target="drop4" class="change_color"></a>
     <ul  class="dropdown-menu pull-left" role="menu" aria-labelledby="drop4">
@@ -228,24 +308,10 @@
       <li><a data-color="color_25" class="color_25" tabindex="-1">25</a></li>
     </ul>
   </div>
-        
-  
 </div>
 <!-- End .background_changer -->
-<!-- /container --> 
-<div class="avgrund-popup  stack modal" id="default-popup" >
-  <div class="modal-header">
-    <h3 id="myModalLabel">Confirm</h3>
-  </div>
-  <div class="modal-body">
-    <p> Do you want to Delte the Client </p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-primary" onclick="javascript:formSubmit();">Delete</button>
-    <button class="btn btn-primary" onclick="javascript:closeDialog();">Close</button>
-  </div>
 </div>
-<div class="avgrund-cover"></div>
+<!-- /container --> 
 
 <!-- Le javascript
     ================================================== --> 
@@ -253,7 +319,7 @@
 <script src="js/jquery.js" type="text/javascript"> </script> 
 <!--[if !IE]> -->
 <script src="js/plugins/enquire.min.js" type="text/javascript"></script> 
-<!-- <![endif]--> 
+<!-- <![endif]-->
 <script language="javascript" type="text/javascript" src="js/plugins/jquery.sparkline.min.js"></script> 
 <script src="js/plugins/excanvas.compiled.js" type="text/javascript"></script> 
 <script src="js/bootstrap-transition.js" type="text/javascript"></script> 
@@ -287,36 +353,28 @@
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-datepicker.js"></script> 
 <script language="javascript" type="text/javascript" src="js/plugins/bootstrap-colorpicker.js"></script> 
 
-<!-- Forms Wizard --> 
-<script language="javascript" type="text/javascript" src="js/plugins/wizard-master/jquery.bootstrap.wizard.js"></script> 
-
 <!-- Custom made scripts for this template --> 
 <script src="js/scripts.js" type="text/javascript"></script> 
 <script type="text/javascript">
   /**** Specific JS for this page ****/
-
-function validate()
+  
+  
+function validate(x)
 {
-
-	y=document.forms["pay_form"]["pay"].value;
-	x=document.forms["pay_form"]["cl_id"].value
-	z=document.forms["pay_form"]["vouch"].value
-	if (x == "" || y == "" || x == null || y == null || y == "0.00" || z == "" || z == "0.00" || z == null || z == 0 ) {
-	
-		alert ('Client Name, Voucher Number and Amount are mandatory');
-		return false;
-	}
-	
-	else{
+	if (!x == '') {
 		document.indentform.submit();
 		return true;
+	}
+	else{
+		alert ('Select a Client');
+		return false;
 	}
 		
    
 } 
-  
 
-  
+
+
 function extractNumber(obj, decimalPlaces, allowNegative)
 {
 	var temp = obj.value;
@@ -399,14 +457,14 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
   
   
   
-
+  
  $(document).ready(function () {
        
         $('textarea.autogrow').autogrow();
         var elem = $("#chars");
-        // $("#text").limiter(100, elem);
+        $("#text").limiter(100, elem);
         // Mask plugin http://digitalbush.com/projects/masked-input-plugin/
-        $("#mask-phone").mask("999-999-9999");
+        $("#mask-phone").mask("(999) 999-9999");
         $("#mask-date").mask("99-99-9999");
         $("#mask-int-phone").mask("+33 999 999 999");
         $("#mask-tax-id").mask("99-9999999");
@@ -423,41 +481,24 @@ function blockNonNumbers(obj, e, allowDecimal, allowNegative)
         // Datepicker
         $('#datepicker1').datepicker({
           format: 'mm-dd-yyyy'
-        });
+        }).on('changeDate', function (ev) {
+        	
+            $(this).datepicker('hide');
+            document.date_form.submit();
+            
+        });;
+        $('#datepicker7').datepicker({
+            format: 'mm-dd-yyyy'
+          }).on('changeDate', function (ev) {
+              $(this).datepicker('hide');
+          });;
         $('#datepicker2').datepicker();
         $('.colorpicker').colorpicker()
         $('#colorpicker3').colorpicker();
     });
 
-    $(document).ready(function() {
-      $('#rootwizard').bootstrapWizard({onTabShow: function(tab, navigation, index) {
-      var $total = navigation.find('li').length;
-      var $current = index+1;
-      var $percent = ($current/$total) * 100;
-      $('#rootwizard').find('.bar').css({width:$percent+'%'});
-      
-      // If it's the last tab then hide the last button and show the finish instead
-      if($current >= $total) {
-        $('#rootwizard').find('.pager .next').hide();
-        $('#rootwizard').find('.pager .finish').show();
-        $('#rootwizard').find('.pager .finish').removeClass('disabled');
-      } else {
-        $('#rootwizard').find('.pager .next').show();
-        $('#rootwizard').find('.pager .finish').hide();
-      }
-      
-    }});
-    // $('#rootwizard .finish').click(function() {
-    //   alert('Finished! Starting over!');
-    //   $('#rootwizard').find("a[href*='tab1']").trigger('click');
-    // }); 
-   
-  }); 
+
 
 </script>
-
-
-
-
 </body>
 </html>

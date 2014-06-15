@@ -16,7 +16,7 @@ $display_date=date('M-d-Y', strtotime($display_date));
 list($m,$d,$y)=split('-',$display_date);
 
 
-   $mondate=date('m-01-Y', strtotime($ddate));
+   $mondate=date('m-01-Y', strtotime($display_date));
        $total_sales_sum_query=mysql_query("select sum(amount) as totalsales from invoice where date_format(in_date,'%m-%d-%Y')='$date'");
        $total_sales_sum_arr=mysql_fetch_assoc($total_sales_sum_query);
        $total_sales_sum=$total_sales_sum_arr['totalsales'];
@@ -27,17 +27,15 @@ list($m,$d,$y)=split('-',$display_date);
 
 
 
-  	
+  				$exp_sum_mon=0;
             	
-            	$opening_stock1=mysql_query("select sum(price*qty) as opening  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$date','%m-%d-%Y'),INTERVAL 1 DAY)");
+             	$opening_stock1=mysql_query("select sum(price*qty) as opening  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$date','%m-%d-%Y'),INTERVAL 1 DAY)");
 				//echo "select sum(price*qty) as opening  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$date','%m-%d-%Y'),INTERVAL 1 DAY)";
 				$opening_stock_arr=mysql_fetch_assoc($opening_stock1);
 				$opening_stock_v=$opening_stock_arr['opening'];
-				
-				
-				/*$openin_stockm_1=mysql_query("select sum(price*qty) as omnopn  from wastage_history where date_format(date,'%m-%Y')='$mondate'");
+				$openin_stockm_1=mysql_query("select sum(price*qty) as omnopn  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$mondate','%m-%d-%Y'),INTERVAL 1 DAY)");
 				$opening_stockm_arr=mysql_fetch_assoc($openin_stockm_1);
-				$opening_stock_m=$opening_stockm_arr['omnopn'];*/
+				$opening_stock_m=$opening_stockm_arr['omnopn'];
             	
             	
             	
@@ -51,7 +49,11 @@ list($m,$d,$y)=split('-',$display_date);
        			$exp_sum_query=mysql_query("select sum(ex_amount) as totalexpense from expense where date_format(exp_date,'%m-%d-%Y')='$date'");
        			$exp_sum_arr=mysql_fetch_assoc($exp_sum_query);
        			$exp_sum=$exp_sum_arr['totalexpense'];
+       			$exp_sum_mon_query=mysql_query("select sum(ex_amount) as totalexpense from expense where exp_date between str_to_date('$mondate','%m-%d-%Y') and  str_to_date('$date','%m-%d-%Y')");
+       			$exp_sum_mon_arr=mysql_fetch_assoc($exp_sum_mon_query);
+       			$exp_sum_mon_1=$exp_sum_mon_arr['totalexpense'];
        			
+       			$exp_sum_mon=0;
        			
        			$total_wastage_query=mysql_query("select sum(price*qty) as totalwasatge  from wastage_history where date_format(date,'%m-%d-%Y')='$date'");
                 $total_wastage_arr=mysql_fetch_assoc($total_wastage_query);
@@ -97,7 +99,7 @@ $daily_txt = '
 <table cellpadding="0" cellspacing="0" class="c15">
 	<tbody>
 	<tr class="c4">
-	<td class="c0 c21"><h1 class="c19"><a name="h.iscnhzafokvq"></a><span class="c1">TOTAL CASH INFLOW : RS '.number_format($total_sales_sum,2).'</span></h1></td>
+	<td class="c0 c21"><h1 class="c19"><a name="h.iscnhzafokvq"></a><span class="c1">Profit and Loss</span></h1></td>
 	</tr>
 	<tr class="c13">
 	<td class="c0"><p class="c3"><span></span></p><a href="#" name="325ff26a9b4da85d1af551f9ee0020d8f93a6f8f"></a><a href="#" name="4"></a><table cellpadding="0" cellspacing="0" class="c15">
@@ -115,7 +117,7 @@ $daily_txt = '
 	</td><td class="c18"><p class="c19"><span class="c11">OPENING STOCK</span></p></td>
 		</td><td class="c18" align="right"><p class="c19"><span class="c11">'.number_format($opening_stock_v,2).'</span></p></td>
 
-	<td class="c7" align="right"><p class="c2"><span class="c11">N/A</span></p></td>
+	<td class="c7" align="right"><p class="c2"><span class="c11">'.number_format($opening_stock_m,2).'</span></p></td>
 	</tr>
 	
 	<tr class="c4">
@@ -142,6 +144,7 @@ $daily_txt = '
         //echo "select sum(ex_amount) as sum_exp from expense  where exp_date between str_to_date('$mondate','%m-%d-%Y') and  str_to_date('$date','%m-%d-%Y') and exp_ex_id='$cash_outflow_rr[ex_id]'";
         $mon_expense_arr=mysql_fetch_assoc($mon_expense_1);
         $mon_expense=$mon_expense_arr['sum_exp'];
+        $exp_sum_mon=$exp_sum_mon+$mon_expense;
 		
 		$daily_txt.='<td class="c7" align="right"><p class="c2"><span class="c11">'.number_format($mon_expense,2).'</span></p></td>
 	</tr>';
@@ -163,14 +166,17 @@ $daily_txt = '
 			<td class="c26"><p class="c19"><span class="c11">'.++$tslno.'</span></p></td>
 			</td><td class="c18"><p class="c19"><span class="c11">Closing Stock</span></p></td>
 			</td><td class="c18" align="right"><p class="c19"><span class="c11">'.number_format($total_inventory,2).'</span></p></td>
-			<td class="c7" align="right"><p class="c2"><span class="c11">N/A</span></p></td>
-		</tr>
+			<td class="c7" align="right"><p class="c2"><span class="c11">'.number_format($total_inventory,2).'</span></p></td>
+		</tr>';
 		
+		$prday=( $total_inventory+$total_sales_sum)-($opening_stock_v+$total_wastage+$total_pur_sum+$exp_sum);
+       	$prmon= ( $total_inventory+$mon_sales_sum)-($opening_stock_m+$mon_wastage+$mon_purr_sum+$exp_sum_mon_1);
+		$daily_txt.='
 		<tr class="c4">
 			<td class="c26"><p class="c19"><span class="c11"></span></p></td>
 			</td><td class="c18" align="center"><p class="c19"><span class="c11"><b>Profit</b></span></p></td>
-			</td><td class="c18" align="right"><p class="c19"><span class="c11"><b>'.number_format(00000,2).'</b></span></p></td>
-			<td class="c7" align="right"><p class="c2"><span class="c11"><b>'.number_format(00000,2).'</b></span></p></td>
+			</td><td class="c18" align="right"><p class="c19"><span class="c11"><b>'.number_format($prday,2).'</b></span></p></td>
+			<td class="c7" align="right"><p class="c2"><span class="c11"><b>'.number_format($prmon,2).'</b></span></p></td>
 		</tr>
 	
 	'; 

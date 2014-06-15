@@ -157,11 +157,9 @@
 				//echo "select sum(price*qty) as opening  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$date','%m-%d-%Y'),INTERVAL 1 DAY)";
 				$opening_stock_arr=mysql_fetch_assoc($opening_stock1);
 				$opening_stock_v=$opening_stock_arr['opening'];
-				
-				
-				/*$openin_stockm_1=mysql_query("select sum(price*qty) as omnopn  from wastage_history where date_format(date,'%m-%Y')='$mondate'");
+				$openin_stockm_1=mysql_query("select sum(price*qty) as omnopn  from wastage_history where date_format(date,'%Y-%m-%d')= date_sub(str_to_date('$mondate','%m-%d-%Y'),INTERVAL 1 DAY)");
 				$opening_stockm_arr=mysql_fetch_assoc($openin_stockm_1);
-				$opening_stock_m=$opening_stockm_arr['omnopn'];*/
+				$opening_stock_m=$opening_stockm_arr['omnopn'];
             	
             	
             	
@@ -175,7 +173,11 @@
        			$exp_sum_query=mysql_query("select sum(ex_amount) as totalexpense from expense where date_format(exp_date,'%m-%d-%Y')='$date'");
        			$exp_sum_arr=mysql_fetch_assoc($exp_sum_query);
        			$exp_sum=$exp_sum_arr['totalexpense'];
-       			
+       			$exp_sum_mon_query=mysql_query("select sum(ex_amount) as totalexpense from expense where exp_date between str_to_date('$mondate','%m-%d-%Y') and  str_to_date('$date','%m-%d-%Y')");
+       			$exp_sum_mon_arr=mysql_fetch_assoc($exp_sum_mon_query);
+       			$exp_sum_mon_1=$exp_sum_mon_arr['totalexpense'];
+       			//echo $exp_sum_mon_1;
+       			$exp_sum_mon=0;
        			
        			$total_wastage_query=mysql_query("select sum(price*qty) as totalwasatge  from wastage_history where date_format(date,'%m-%d-%Y')='$date'");
                 $total_wastage_arr=mysql_fetch_assoc($total_wastage_query);
@@ -190,7 +192,9 @@
 
        			
        			$total_COF=$total_pur_sum + $exp_sum + $total_wastage;
-       
+       			
+       			$prday=0;$prmon=0;
+       			
             	
             	           
             ?>
@@ -199,7 +203,7 @@
                	<td><?php echo ++$plno ;?></td>
                 <td> Opening Stock </td>
                 <td> <?php echo $opening_stock_v ;?> </td>
-                <td> <?php echo "N/A" ;?> </td>
+                <td> <?php echo $opening_stock_m ;?> </td>
               </tr>
               <tr>
                	<td><?php echo ++$plno ;?></td>
@@ -217,44 +221,50 @@
                  <tr>
                	<td><?php echo ++$plno ;?></td>
                 <td> <?php echo $cash_outflow_rr['ex_type']; ?> </td>
-                <td> <?php echo $cash_outflow_rr['sum_exp']; ?>  </td>
+                <td> <?php echo round($cash_outflow_rr['sum_exp'],2); ?>  </td>
                 <?php
                 	$mon_expense_1=mysql_query("select sum(ex_amount) as sum_exp from expense  where exp_date between str_to_date('$mondate','%m-%d-%Y') and  str_to_date('$date','%m-%d-%Y') and exp_ex_id='$cash_outflow_rr[ex_id]'");
                 	//echo "select sum(ex_amount) as sum_exp from expense  where exp_date between str_to_date('$mondate','%m-%d-%Y') and  str_to_date('$date','%m-%d-%Y') and exp_ex_id='$cash_outflow_rr[ex_id]'";
                 	$mon_expense_arr=mysql_fetch_assoc($mon_expense_1);
                 	$mon_expense=$mon_expense_arr['sum_exp'];
+                	$exp_sum_mon=$exp_sum_mon+$mon_expense;
                 ?>
                 
-                <td> <?php echo $mon_expense ;?> </td>
+                <td> <?php echo round($mon_expense,2) ;?> </td>
               </tr>
               
               <?php } ?>
               <tr>
                	<td><?php echo ++$plno ;?></td>
                 <td> Total Wastage </td>
-                <td> <?php echo $total_wastage ;?> </td>
-                <td> <?php echo $mon_wastage ;?> </td>
+                <td> <?php echo round($total_wastage,2) ;?> </td>
+                <td> <?php echo round($mon_wastage,2) ;?> </td>
               </tr>
               
                 <tr>
                	<td><?php echo ++$plno ;?></td>
                 <td> Total Sales </td>
-                <td> <?php echo $total_sales_sum ;?> </td>
-                <td> <?php echo $mon_sales_sum ;?> </td>
+                <td> <?php echo round($total_sales_sum,2) ;?> </td>
+                <td> <?php echo round($mon_sales_sum,2) ;?> </td>
               </tr>
               
             <tr>
                	<td><?php echo ++$plno ;?></td>
                 <td> Closing Stock </td>
-                <td> <?php echo $total_inventory ;?> </td>
-                <td> <?php echo "N/A" ;?> </td>
+                <td> <?php echo round($total_inventory,2) ;?> </td>
+                <td> <?php echo round($total_inventory,2) ;?> </td>
               </tr>
               
                <tr>
                	<td><?php echo ++$plno ;?></td>
                 <td> <b>Profit</b> </td>
-                <td> <b>00000</b> </td>
-                <td> <b>00000</b> </td>
+                <?php 
+                	$prday=( $total_inventory+$total_sales_sum)-($opening_stock_v+$total_wastage+$total_pur_sum+$exp_sum);
+       				$prmon= ( $total_inventory+$mon_sales_sum)-($opening_stock_m+$mon_wastage+$mon_purr_sum+$exp_sum_mon_1);
+       				//echo "($exp_sum_mon)";
+                ?>
+                <td> <b><?php echo number_format($prday,2) ;?></b> </td>
+                <td> <b><?php echo number_format($prmon,2) ;?></b> </td>
               </tr>
              
             

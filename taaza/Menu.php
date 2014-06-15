@@ -50,7 +50,11 @@
             <li class="active"><a href="Total_Indent.php?indent=active&in_indent=in&t_indent=active">Total Indent</a></li>
 		  <?php } else { ?>
 			<li><a href="Total_Indent.php?indent=active&in_indent=in&t_indent=active">Total Indent</a></li>
-		  <?php } if (isset($_GET['o_indent']) ) { ?>
+		  <?php } if (isset($_GET['to_indent']) ) { ?>
+            <li class="active"><a href="Tonnage.php?indent=active&in_indent=in&to_indent=active">Total Tonnage</a></li>
+		  <?php } else { ?>
+			<li><a href="Tonnage.php?indent=active&in_indent=in&to_indent=active">Total Tonnage</a></li>
+		  <?php }if (isset($_GET['o_indent']) ) { ?>
             <li class="active"><a href="Old_Indent.php?indent=active&in_indent=in&o_indent=active">Old Indent</a></li>
 		  <?php } else { ?>
 			<li><a href="Old_Indent.php?indent=active&in_indent=in&o_indent=active">Old Indent</a></li> 

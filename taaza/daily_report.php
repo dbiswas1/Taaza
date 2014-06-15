@@ -1,7 +1,7 @@
 <!-- To Avoid resubmitting -->
 <?php
 
-    include 'password_protect_taaza.php';
+   // include 'password_protect_taaza.php';
     include 'db_config.php' ;
   		
 	$conn=new createConnection();
