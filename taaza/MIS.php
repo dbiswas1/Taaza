@@ -1,6 +1,7 @@
 <!-- To Avoid resubmitting -->
 <?php
 
+    include 'password_protect.php';
     include 'db_config.php' ;
   		
 	$conn=new createConnection();
@@ -34,25 +35,6 @@
 <html class="sidebar_default no-js" lang="en">
 <head>
 
-<SCRIPT language="JavaScript">
-<!--hide
-
-var password;
-
-var pass1="dingdong";
-
-password=prompt('Please enter your password to view this page!');
-
-if (password==pass1)
-  alert('Password Correct! Click OK to enter!');
-else
-   {
-    alert('Password INCorrect! Going to Home page!');
-    window.location="Add_Indent.php?indent=active&in_indent=in&a_indent=active";
-    }
-
-//-->
-</SCRIPT>
 
 <meta charset="utf-8">
 <title>Taaza Tarkari- MIS Report</title>
@@ -306,7 +288,7 @@ else
        
 		         
                   
-       <p align="center"> <button  type="button" onclick="location.href='print_mis_report.php?date=<?php echo $date ;?>';" name="in_btn" value="inden" class="btn btn-primary">Print</button> </p>
+       <p align="center"> <button  type="button" onclick="location.href='print_mis_report.php?date=<?php echo $date ;?>';" name="in_btn" value="inden" class="btn btn-primary">Print</button>  <button  type="button" onclick="eraseCookie('verify');" name="log_btn" value="inden" class="btn btn-primary">Logout</button> </p>
         </div>
         <input type="hidden" name="formid" value="<?php echo $_SESSION["formid"]; ?>" />
         </form>
@@ -408,6 +390,34 @@ else
 <script type="text/javascript">
   /**** Specific JS for this page ****/
   
+  
+  /*  For resetting the password cookie */
+ 
+ function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+ function eraseCookie(name) {
+	createCookie(name,"",-1);
+	window.location.assign("Add_Indent.php?indent=active&in_indent=in&a_indent=active")
+}
   
 function validate(x)
 {
