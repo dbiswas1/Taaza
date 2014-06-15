@@ -3,7 +3,7 @@
 
 <?php
 
-    include 'password_protect.php';
+    include 'password_protect_taaza.php';
     include 'db_config.php' ;
   		
 	$conn=new createConnection();
