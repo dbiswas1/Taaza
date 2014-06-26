@@ -5,16 +5,28 @@ include('./mpdf/mpdf.php');
 $price_deatils="price1";
 if($_GET['price'] == 0)
 	$price_deatils="price1";
+
 if($_GET['price'] == 1)
 	$price_deatils="price2";
+
 if($_GET['price'] == 2)
+	$price_deatils="price3";
+
+if($_GET['price'] == 3)
+	$price_deatils="price4";
+
+if($_GET['price'] == 4)
 	$price_deatils="secondary";
 
 
 include 'db_config.php' ;
 
+
+
 $conn=new createConnection();
+
 $conn->connect();
+
 $conn->selectdb();
 
 $mpdf=new mPDF();
